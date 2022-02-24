@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "dom",
+      "dom.asynciterable",
+      "deno.ns",
+      "deno.unstable"
+    ],
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment"
+  },
+  "fmt": {
+    "files": {
+      "exclude": [
+        "public/"
+      ]
+    }
+  }
+}
