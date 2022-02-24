@@ -47,8 +47,8 @@ const RootApp = ({ Page, initData, route, timestamp, env }: any) => {
                   _props = {};
                   status = false;
                   async didMount() {
-                    if (this.status && Page.getInitProps) {
-                      const props = await Page.getInitProps({
+                    if (this.status && Page.initProps) {
+                      const props = await Page.initProps({
                         isServer: false,
                         params: this.route.params,
                         pathname: this.route.pathname,

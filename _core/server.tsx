@@ -24,6 +24,7 @@ const app = new NHttp<
       Page: any,
       props: { path: string; initData?: any },
     ) => Record<string, any>;
+    handler: (targetFile: string) => Promise<any>;
     env: string;
   }
 >({ env });
@@ -62,6 +63,9 @@ app.use((rev, next) => {
   rev.isServer = true;
   rev.env = env;
   rev.pathname = rev.path;
+  rev.handler = async (name) => {
+    return await apis.map[name](rev, next);
+  };
   rev.render = (Page, props) => {
     rev.params = pathToParams(props.path, rev.path, rev.params);
     return ssr(() => (
@@ -87,7 +91,7 @@ for (let i = 0; i < pages.length; i++) {
     rev.params = pathToParams(route.path, rev.path, rev.params);
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
     const Page = route.page as any;
-    const initData = Page.getInitProps ? (await Page.getInitProps(rev)) : {};
+    const initData = Page.initProps ? (await Page.initProps(rev)) : {};
     return ssr(() => (
       <RootApp
         env={env}
@@ -111,22 +115,29 @@ if (emit) {
   });
 }
 
-app.use("/api", apis as any);
+app.use("/api", apis.api as any);
 
 app.on404((rev) => {
   rev.response.status(404);
   if (rev.path.startsWith("/api/")) {
     return { status: 404, message: `route ${rev.url} not found` };
   }
-  return ssr(() => <Error404 message={`route ${rev.url} not found`} />, void 0, 404);
+  return ssr(
+    () => <Error404 message={`route ${rev.url} not found`} />,
+    void 0,
+    404,
+  );
 });
 app.onError((err, rev) => {
-console.log(err);
   const status = rev.response.status();
   if (rev.path.startsWith("/api/")) {
     return { status, message: err.message };
   }
-  return ssr(() => <ErrorPage message={err.message} status={status} />, void 0, status as number);
+  return ssr(
+    () => <ErrorPage message={err.message} status={status} />,
+    void 0,
+    status as number,
+  );
 });
 
 export const http = app;

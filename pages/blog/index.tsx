@@ -74,12 +74,16 @@ function Blog(props: PageProps) {
   );
 }
 
-Blog.getInitProps = async (rev: RequestEvent) => {
-  if (!rev.isServer) NProgress.start();
-console.log(rev.getBaseUrl() + "/api/blog");
-  const data = await (await fetch(rev.getBaseUrl() + "/api/blog")).json();
-  if (!rev.isServer) NProgress.done();
-  return { data, isClient: !rev.isServer };
+Blog.initProps = async (rev: RequestEvent) => {
+  let data, isClient = !rev.isServer;
+  if (rev.isServer) {
+    data = await rev.handler("/api/blog/index.ts");
+  } else {
+    NProgress.start();
+    data = await (await fetch(rev.getBaseUrl() + "/api/blog")).json();
+    NProgress.done();
+  }
+  return { data, isClient };
 };
 
 export default Blog;

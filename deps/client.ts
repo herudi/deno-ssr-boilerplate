@@ -25,7 +25,12 @@ export {
 import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.9/src/request_event.ts";
 export type RequestEvent = BRequestEvent & {
   getBaseUrl: () => string;
+  pathname: string;
+  path: string;
+  url: string;
+  params: Record<string, any>;
   isServer: boolean;
+  handler: (targetFile: string) => Promise<any>;
 };
 
 export type RouteProps = {

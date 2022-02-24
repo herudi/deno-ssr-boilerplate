@@ -64,21 +64,30 @@ export default [
   return `
 import ptp from "./path_to_params.ts";
 import { HttpApi } from "../deps/server.ts";
+import { Handler } from "../deps/server.ts";
 ${arr.map((el, i) => `import $${i} from "../pages${el}";`).join("\n")}
 const api = new HttpApi();
+const map = {} as Record<string, Handler>;
   ${
     arr.map((el, i) => {
       const path = genPath(el);
       if (path.endsWith("*")) {
-        return `api.any('${path}', (rev, next) => {
-        rev.params = ptp('/api${path}', rev.path, rev.params);
-        return next();
-      }, $${i} as any);`;
+        return `
+map['${el}'] = (rev, next) => {
+  rev.params = ptp('/api${path}', rev.path, rev.params);
+  return ($${i} as any)(rev, next);
+};
+api.any('${path}', (rev, next) => {
+  rev.params = ptp('/api${path}', rev.path, rev.params);
+  return ($${i} as any)(rev, next);
+});`;
       }
-      return `api.any('${path}', $${i} as any);`;
+      return `
+map['${el}'] = $${i};
+api.any('${path}', $${i});`;
     }).join("\n  ")
   }
-export default api;
+export default { api, map };
 `;
 }
 

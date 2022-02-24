@@ -16,7 +16,10 @@ function About(props: PageProps) {
   );
 }
 
-About.getInitProps = async (rev: RequestEvent) => {
+About.initProps = async (rev: RequestEvent) => {
+  if (rev.isServer) {
+    return await rev.handler("/api/about.ts");
+  }
   return await (await fetch(rev.getBaseUrl() + "/api/about")).json();
 };
 
