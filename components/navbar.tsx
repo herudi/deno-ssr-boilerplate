@@ -15,7 +15,7 @@ export function Navbar({ route }: PageProps) {
             class={tw
               `flex-1 flex items-center justify-center sm:items-stretch sm:justify-start`}
           >
-            <div class={tw`hidden sm:block sm:ml-6`}>
+            <div class={tw`sm:block sm:ml-6`}>
               <div class={tw`flex space-x-4`}>
                 <Link
                   class={tw`${route.pathname === "/" ? active : in_active}`}

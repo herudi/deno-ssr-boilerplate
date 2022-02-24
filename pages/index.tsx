@@ -8,7 +8,7 @@ function Home() {
         <title>Hello Home</title>
       </Helmet>
       <div class={tw`bg-white flex h-screen`}>
-        <h1 class={tw`text-5xl text-gray-600 m-auto mt-20`}>
+        <h1 class={tw`text-5xl m-auto mt-20 text-blue-600`}>
           Hello Home Page
         </h1>
       </div>

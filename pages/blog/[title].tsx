@@ -20,23 +20,21 @@ function BlogDetail({ data, isClient }: PageProps) {
         <title>{(data || {}).title || ""}</title>
       </Helmet>
       <div class={tw`bg-white flex h-screen`}>
-        <div class={tw`mx-40 px-4 pb-28 sm:mt-16 sm:px-6 md:px-8 xl:px-12`}>
+        <div
+          class={tw
+            `max-w-5xl mx-auto px-4 pb-28 mt-10 sm:px-6 md:px-8 xl:px-12 xl:max-w-6xl`}
+        >
           {data && (
             <div>
-              <div
-                class={tw
-                  `relative max-w-3xl mx-auto xl:max-w-none xl:grid xl:grid-cols-[1fr_50rem] xl:gap-x-8`}
-              >
-                <div class={tw`text-sm sm:text-center`}>
-                  January, 12 2030
-                </div>
-                <h1
-                  class={tw
-                    `col-span-full text-3xl sm:text-4xl sm:text-center xl:mb-16 font-extrabold tracking-tight`}
-                >
-                  {data.title}
-                </h1>
+              <div class={tw`text-sm sm:text-center`}>
+                January, 12 2030
               </div>
+              <h1
+                class={tw
+                  `col-span-full text-3xl sm:text-4xl sm:text-center xl:mb-16 font-extrabold tracking-tight`}
+              >
+                {data.title}
+              </h1>
               <p class={tw`mb-20`}>{data.body}</p>
               <Link
                 to={"/blog"}

@@ -118,12 +118,11 @@ if (emit) {
 app.use("/api", apis.api as any);
 
 app.on404((rev) => {
-  rev.response.status(404);
   if (rev.path.startsWith("/api/")) {
     return { status: 404, message: `route ${rev.url} not found` };
   }
   return ssr(
-    () => <Error404 message={`route ${rev.url} not found`} />,
+    () => <Error404 message={`route ${rev.url} not found`} status={404} />,
     void 0,
     404,
   );
