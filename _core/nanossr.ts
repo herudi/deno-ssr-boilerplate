@@ -43,13 +43,13 @@ const html = ({ body, head, footer, styleTag, attributes }: any) => (`
 <html>
 `);
 
-export function ssr(render: CallableFunction, options?: any) {
+export function ssr(render: CallableFunction, options?: any, status = 200) {
   sheet(options?.tw ?? {}).reset();
   const app = nanoRender(render(), options);
   const { body, head, footer, attributes } = Helmet.SSR(app);
   const styleTag = getStyleTag(sheet());
   return new Response(
     html({ body, head, footer, styleTag, attributes }),
-    { headers: { "content-type": "text/html" } },
+    { headers: { "content-type": "text/html" }, status },
   );
 }

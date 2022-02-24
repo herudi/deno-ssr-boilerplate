@@ -114,17 +114,18 @@ if (emit) {
 app.use("/api", apis as any);
 
 app.on404((rev) => {
+  rev.response.status(404);
   if (rev.path.startsWith("/api/")) {
     return { status: 404, message: `route ${rev.url} not found` };
   }
-  return ssr(() => <Error404 message={`route ${rev.url} not found`} />);
+  return ssr(() => <Error404 message={`route ${rev.url} not found`} />, void 0, 404);
 });
 app.onError((err, rev) => {
   const status = rev.response.status();
   if (rev.path.startsWith("/api/")) {
     return { status, message: err.message };
   }
-  return ssr(() => <ErrorPage message={err.message} status={status} />);
+  return ssr(() => <ErrorPage message={err.message} status={status} />, void 0, status as number);
 });
 
 export const http = app;
