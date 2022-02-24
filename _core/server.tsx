@@ -121,6 +121,7 @@ app.on404((rev) => {
   return ssr(() => <Error404 message={`route ${rev.url} not found`} />, void 0, 404);
 });
 app.onError((err, rev) => {
+console.log(err);
   const status = rev.response.status();
   if (rev.path.startsWith("/api/")) {
     return { status, message: err.message };
