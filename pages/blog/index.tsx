@@ -76,6 +76,7 @@ function Blog(props: PageProps) {
 
 Blog.getInitProps = async (rev: RequestEvent) => {
   if (!rev.isServer) NProgress.start();
+console.log(rev.getBaseUrl() + "/api/blog");
   const data = await (await fetch(rev.getBaseUrl() + "/api/blog")).json();
   if (!rev.isServer) NProgress.done();
   return { data, isClient: !rev.isServer };
