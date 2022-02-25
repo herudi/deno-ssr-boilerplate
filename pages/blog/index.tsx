@@ -9,8 +9,8 @@ import {
 } from "../../deps/client.ts";
 import NProgress from "https://esm.sh/nprogress?no-check";
 
-function Blog(props: PageProps) {
-  if (props.isClient) {
+function Blog({ data, isServer }: PageProps) {
+  if (!isServer) {
     window.scrollTo(0, 0);
   }
   return (
@@ -35,8 +35,8 @@ function Blog(props: PageProps) {
             </p>
           </header>
           <div class={tw`space-y-16`}>
-            {props.data &&
-              props.data.map((el: any) => (
+            {data &&
+              data.map((el: any) => (
                 <article
                   class={tw
                     `relative flex flex-col max-w-3xl lg:ml-auto xl:max-w-none xl:w-[50rem]`}
@@ -75,7 +75,7 @@ function Blog(props: PageProps) {
 }
 
 Blog.initProps = async (rev: RequestEvent) => {
-  let data, isClient = !rev.isServer;
+  let data;
   if (rev.isServer) {
     data = await rev.handler("/api/blog/index.ts");
   } else {
@@ -83,7 +83,7 @@ Blog.initProps = async (rev: RequestEvent) => {
     data = await (await fetch(rev.getBaseUrl() + "/api/blog")).json();
     NProgress.done();
   }
-  return { data, isClient };
+  return { data };
 };
 
 export default Blog;

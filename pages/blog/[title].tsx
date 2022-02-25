@@ -9,9 +9,9 @@ import {
 } from "../../deps/client.ts";
 import NProgress from "https://esm.sh/nprogress?no-check";
 
-function BlogDetail({ data, isClient }: PageProps) {
-  if (isClient) {
-    console.log("client");
+function BlogDetail({ data, isServer, getParams }: PageProps) {
+  const params = getParams();
+  if (!isServer) {
     window.scrollTo(0, 0);
   }
   return (
@@ -33,7 +33,7 @@ function BlogDetail({ data, isClient }: PageProps) {
                 class={tw
                   `col-span-full text-3xl sm:text-4xl sm:text-center xl:mb-16 font-extrabold tracking-tight`}
               >
-                {data.title}
+                {unescape(params.title)}
               </h1>
               <p class={tw`mb-20`}>{data.body}</p>
               <Link
@@ -52,7 +52,7 @@ function BlogDetail({ data, isClient }: PageProps) {
 }
 
 BlogDetail.initProps = async (rev: RequestEvent) => {
-  let data, isClient = !rev.isServer;
+  let data;
   if (rev.isServer) {
     data = await rev.handler("/api/blog/[title].ts");
   } else {
@@ -61,7 +61,7 @@ BlogDetail.initProps = async (rev: RequestEvent) => {
     data = await data.json();
     NProgress.done();
   }
-  return { data: data[0] || {}, isClient };
+  return { data: data[0] || {} };
 };
 
 export default BlogDetail;

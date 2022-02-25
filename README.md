@@ -5,6 +5,8 @@ for [Deno](https://deno.land) that uses [nanojsx](https://nanojsx.io/).
 
 Demo => https://deno-ssr-boilerplate.deno.dev
 
+> Note: under development. not ready for production.
+
 ## Features
 
 - Pure Deno Ecosystem.
@@ -48,7 +50,9 @@ deno run -A --no-check server.ts
 
 ### Example Code
 
-```ts
+File : /pages/about.tsx
+
+```tsx
 /** @jsx h */
 import { h, Helmet, PageProps, RequestEvent, tw } from "../deps/client.ts";
 
@@ -78,6 +82,21 @@ About.initProps = async (rev: RequestEvent) => {
 };
 
 export default About;
+```
+
+File : /pages/api/about.ts
+
+```ts
+import { HttpError, RequestEvent } from "../../deps/server.ts";
+
+export default async function handler(rev: RequestEvent) {
+  if (rev.request.method == "GET") {
+    // some code here
+
+    return { title: "Welcome About From Api" };
+  }
+  throw new HttpError(405, "method not allowed");
+}
 ```
 
 ### Note

@@ -4,16 +4,102 @@ import {
   Component,
   h,
   Helmet,
-  isSSR,
   matchPath,
   Route,
   Switch,
 } from "../deps/client.ts";
 import pages from "./pages.ts";
 import Error404 from "../components/error/404.tsx";
+import pathToParams from "./path_to_params.ts";
 
-const RootApp = ({ Page, initData, route, timestamp, env }: any) => {
-  if (isSSR()) {
+const ClientApp = ({ initData }: any) => (
+  <Switch fallback={() => <Error404 />}>
+    {pages.map(({ path, page }: any) => {
+      const Page = page;
+      return (
+        <Route exact path={path}>
+          {() => {
+            let g_match = { status: false } as any;
+            return class extends Component {
+              route = {
+                url: location.pathname + location.search,
+                pathname: location.pathname,
+                path,
+              };
+              getParams() {
+                if (g_match.status) return g_match.params;
+                const params = pathToParams(path, location.pathname);
+                if (g_match.status === false) {
+                  g_match = {
+                    status: true,
+                    params: params || {},
+                  };
+                }
+                return params || {};
+              }
+              _props = {};
+              status = false;
+              async didMount() {
+                if (this.status && Page.initProps) {
+                  if (g_match.status === false) {
+                    const params = pathToParams(path, location.pathname);
+                    g_match = {
+                      status: true,
+                      params: params || {},
+                    };
+                  }
+                  const props = await Page.initProps({
+                    isServer: false,
+                    params: g_match.params,
+                    pathname: location.pathname,
+                    path: location.pathname,
+                    url: location.pathname + location.search,
+                    getBaseUrl: () => location.origin,
+                  });
+                  this.update(props);
+                }
+              }
+              render(props: any) {
+                const route = this.route;
+                const getParams = this.getParams;
+                if (props) {
+                  return (
+                    <App
+                      Component={Page}
+                      props={{ ...props, route, getParams, isServer: false }}
+                    />
+                  );
+                }
+                if ((window as any).__INIT_DATA__) {
+                  this._props = initData;
+                  delete (window as any).__INIT_DATA__;
+                } else if (!this.status) {
+                  this.status = true;
+                }
+                return (
+                  <App
+                    Component={Page}
+                    props={{
+                      ...this._props,
+                      route,
+                      getParams,
+                      isServer: false,
+                    }}
+                  />
+                );
+              }
+            };
+          }}
+        </Route>
+      );
+    })}
+  </Switch>
+);
+
+const RootApp = (
+  { Page, initData, route, getParams, timestamp, env, isServer }: any,
+) => {
+  if (isServer) {
     return (
       <div id="root">
         <Helmet footer>
@@ -25,62 +111,16 @@ const RootApp = ({ Page, initData, route, timestamp, env }: any) => {
           )}
           <script async src={"/assets/hydrate.js?v=" + timestamp}></script>
         </Helmet>
-        <App Component={Page} props={{ ...initData, route }} />
+        <App
+          Component={Page}
+          props={{ ...initData, route, getParams, isServer }}
+        />
       </div>
     );
   }
   return (
     <div id="root">
-      <Switch fallback={() => <Error404 />}>
-        {pages.map(({ path, page }: any) => {
-          const Page = page;
-          return (
-            <Route exact path={path}>
-              {() =>
-                class extends Component {
-                  match = matchPath(location.pathname, { path });
-                  route = {
-                    params: this.match?.params || {},
-                    pathname: this.match?.url || location.pathname,
-                    path,
-                  };
-                  _props = {};
-                  status = false;
-                  async didMount() {
-                    if (this.status && Page.initProps) {
-                      const props = await Page.initProps({
-                        isServer: false,
-                        params: this.route.params,
-                        pathname: this.route.pathname,
-                        path: this.route.pathname,
-                        url: this.route.pathname + location.search,
-                        getBaseUrl: () => location.origin,
-                      });
-                      this.update(props);
-                    }
-                  }
-                  render(props: any) {
-                    const route = this.route;
-                    if (props) {
-                      return (
-                        <App Component={Page} props={{ ...props, route }} />
-                      );
-                    }
-                    if ((window as any).__INIT_DATA__) {
-                      this._props = initData;
-                      delete (window as any).__INIT_DATA__;
-                    } else if (!this.status) {
-                      this.status = true;
-                    }
-                    return (
-                      <App Component={Page} props={{ ...this._props, route }} />
-                    );
-                  }
-                }}
-            </Route>
-          );
-        })}
-      </Switch>
+      <ClientApp initData={initData} />
     </div>
   );
 };

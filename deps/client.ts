@@ -6,7 +6,6 @@ export {
   h,
   Helmet,
   hydrate,
-  isSSR,
   ssr,
   Suspense,
   tw,
@@ -31,14 +30,16 @@ export type RequestEvent = BRequestEvent & {
 };
 
 export type RouteProps = {
-  params: Record<string, any>;
+  url: string;
   pathname: string;
+  path: string;
   [k: string]: any;
 };
 
 export type PageProps = {
   route: RouteProps;
-  children?: any;
+  getParams: () => Record<string, any>;
+  isServer: boolean;
   [k: string]: any;
 };
 

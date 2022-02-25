@@ -6,6 +6,7 @@
       "deno.ns",
       "deno.unstable"
     ],
+    "jsx": "react",
     "jsxFactory": "h",
     "jsxFragmentFactory": "Fragment"
   },

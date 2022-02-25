@@ -68,19 +68,21 @@ app.use((rev, next) => {
   };
   rev.render = (Page, props) => {
     rev.params = pathToParams(props.path, rev.path, rev.params);
-    return ssr(() => (
+    return ssr(
       <RootApp
+        isServer={true}
         env={env}
         timestamp={timestamp}
         initData={props.initData || {}}
         Page={Page}
+        getParams={() => rev.params}
         route={{
-          params: rev.params,
+          url: rev.url,
           pathname: rev.path,
           path: props.path,
         }}
-      />
-    ));
+      />,
+    );
   };
   return next();
 });
@@ -92,19 +94,21 @@ for (let i = 0; i < pages.length; i++) {
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
     const Page = route.page as any;
     const initData = Page.initProps ? (await Page.initProps(rev)) : {};
-    return ssr(() => (
+    return ssr(
       <RootApp
+        isServer={true}
         env={env}
         timestamp={timestamp}
         initData={initData}
         Page={Page}
+        getParams={() => rev.params}
         route={{
-          params: rev.params,
+          url: rev.url,
           pathname: rev.path,
           path: route.path,
         }}
-      />
-    ));
+      />,
+    );
   });
 }
 

@@ -1,13 +1,13 @@
 // from https://crux.land/nanossr@0.0.1
 // update : nano_jsx@v0.0.29 and head.join("\n")
 
-export * from "https://deno.land/x/nano_jsx@v0.0.29/mod.ts";
+export * from "https://cdn.skypack.dev/nano-jsx?dts";
 export { tw } from "https://cdn.skypack.dev/twind@0.16.16";
 
 import {
   Helmet,
   renderSSR as nanoRender,
-} from "https://deno.land/x/nano_jsx@v0.0.29/mod.ts";
+} from "https://cdn.skypack.dev/nano-jsx?dts";
 import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
 import {
   getStyleTag,
@@ -36,20 +36,21 @@ const html = ({ body, head, footer, styleTag, attributes }: any) => (`
     ${head.join("\n")}
     ${styleTag}
   </head>
-  <body>
+  <body ${attributes.body.toString()}>
     ${body}
     ${footer.join("\n")}
   </body>
 <html>
 `);
 
-export function ssr(render: CallableFunction, options?: any, status = 200) {
+export function ssr(Component: any, options?: any, status = 200) {
   sheet(options?.tw ?? {}).reset();
-  const app = nanoRender(render(), options);
+  const app = nanoRender(Component, options);
   const { body, head, footer, attributes } = Helmet.SSR(app);
   const styleTag = getStyleTag(sheet());
+  const text = html({ body, head, footer, styleTag, attributes });
   return new Response(
-    html({ body, head, footer, styleTag, attributes }),
+    text,
     { headers: { "content-type": "text/html" }, status },
   );
 }
