@@ -22,21 +22,23 @@ class Home extends Component<PageProps> {
             <h3 class={tw`text-5xl text-center mt-20 mb-20 text-gray-600`}>
               Counter App
             </h3>
-            <button
-              class={tw`${style.button}`}
-              onClick={() => this.changeValue(1)}
-            >
-              Increment
-            </button>
-            <span class={tw`p-10 text-2xl text-sm font-semibold text-blue-800`}>
-              {this.value}
-            </span>
-            <button
-              class={tw`${style.button}`}
-              onClick={() => this.changeValue(-1)}
-            >
-              Decrement
-            </button>
+            <div class={tw`text-center`}>
+              <button
+                class={tw`${style.button}`}
+                onClick={() => this.changeValue(1)}
+              >
+                +
+              </button>
+              <span class={tw`p-5 text-2xl text-sm font-semibold text-blue-800`}>
+                {this.value}
+              </span>
+              <button
+                class={tw`${style.button}`}
+                onClick={() => this.changeValue(-1)}
+              >
+                -
+              </button>
+            </div>
           </div>
         </div>
       </div>
