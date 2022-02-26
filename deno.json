@@ -16,6 +16,5 @@
         "public/"
       ]
     }
-  },
-  "importMap": "./import_map.json"
+  }
 }

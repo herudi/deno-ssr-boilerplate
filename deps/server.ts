@@ -6,5 +6,8 @@ export {
   NHttp,
   RequestEvent,
   Router as HttpApi,
-} from "nhttp";
-export type { Handler, NextFunction } from "nhttp";
+} from "https://deno.land/x/nhttp@1.1.10/mod.ts";
+export type {
+  Handler,
+  NextFunction,
+} from "https://deno.land/x/nhttp@1.1.10/mod.ts";
