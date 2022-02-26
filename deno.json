@@ -17,5 +17,5 @@
       ]
     }
   },
-  "importMap": "import_map.json"
+  "importMap": "./import_map.json"
 }
