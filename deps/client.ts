@@ -1,6 +1,6 @@
 // dependencies for client
 import { Router } from "../_core/nanossr.ts";
-import pathToParams from './../_core/path_to_params.ts';
+import pathToParams from "./../_core/path_to_params.ts";
 import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.9/src/request_event.ts";
 
 export {
@@ -25,7 +25,8 @@ export const {
   to,
 } = Router;
 
-export const parseParamsFromPath = (path: string) => pathToParams(path, location.pathname) || {};
+export const parseParamsFromPath = (path: string) =>
+  pathToParams(path, location.pathname) || {};
 
 export type RequestEvent = BRequestEvent & {
   getBaseUrl: () => string;

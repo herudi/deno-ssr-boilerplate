@@ -10,7 +10,6 @@ import pages from "./pages.ts";
 import apis from "./apis.ts";
 import Error404 from "../components/error/404.tsx";
 import ErrorPage from "../components/error/error.tsx";
-import pathToParams from "./path_to_params.ts";
 
 const timestamp = new Date().getTime();
 
@@ -67,7 +66,6 @@ app.use((rev, next) => {
     return await apis.map[name](rev, next);
   };
   rev.render = (Page, props) => {
-    rev.params = pathToParams(props.path, rev.path, rev.params);
     return ssr(
       <RootApp
         isServer={true}
@@ -90,7 +88,6 @@ app.use((rev, next) => {
 for (let i = 0; i < pages.length; i++) {
   const route: any = pages[i];
   app.get(route.path, async (rev) => {
-    rev.params = pathToParams(route.path, rev.path, rev.params);
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
     const Page = route.page as any;
     const initData = Page.initProps ? (await Page.initProps(rev)) : {};

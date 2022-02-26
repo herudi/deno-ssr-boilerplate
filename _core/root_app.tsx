@@ -31,7 +31,7 @@ const ClientApp = ({ initData }: any) => (
                 if (g_match.status === false) {
                   g_match = {
                     status: true,
-                    params: params
+                    params: params,
                   };
                 }
                 return params;

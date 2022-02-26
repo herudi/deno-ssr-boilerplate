@@ -1,5 +1,5 @@
 // from https://crux.land/nanossr@0.0.1
-// update : head.join("\n")
+// update : head.join("\n") and status
 
 export * from "https://cdn.skypack.dev/nano-jsx@v0.0.30-dev.1?dts";
 export { tw } from "https://cdn.skypack.dev/twind@0.16.16";

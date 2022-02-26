@@ -9,7 +9,7 @@ await genRoutesWithRefresh();
 await sleep(1000);
 const CMD = Deno.build.os === "windows" ? "cmd /c " : "";
 const script = CMD +
-  "deno run -A --watch --no-check --unstable server.ts --dev";
+  "deno run -A --import-map=import_map.json --watch --no-check --unstable server.ts --dev";
 const p = Deno.run({ cmd: script.split(" ") });
 const pages_dir = join(resolve(Deno.cwd()), "./pages");
 const url = toFileUrl(pages_dir);

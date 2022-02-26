@@ -33,7 +33,7 @@ function BlogDetail({ data, isServer, getParams }: PageProps) {
                 class={tw
                   `col-span-full text-3xl sm:text-4xl sm:text-center xl:mb-16 font-extrabold tracking-tight`}
               >
-                {unescape(params.title)}
+                {params.title}
               </h1>
               <p class={tw`mb-20`}>{data.body}</p>
               <Link

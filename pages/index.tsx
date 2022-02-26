@@ -29,7 +29,9 @@ class Home extends Component<PageProps> {
               >
                 +
               </button>
-              <span class={tw`p-5 text-2xl text-sm font-semibold text-blue-800`}>
+              <span
+                class={tw`p-5 text-2xl text-sm font-semibold text-blue-800`}
+              >
                 {this.value}
               </span>
               <button
