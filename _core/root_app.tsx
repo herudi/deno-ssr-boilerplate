@@ -4,13 +4,12 @@ import {
   Component,
   h,
   Helmet,
-  matchPath,
+  parseParamsFromPath,
   Route,
   Switch,
 } from "../deps/client.ts";
 import pages from "./pages.ts";
 import Error404 from "../components/error/404.tsx";
-import pathToParams from "./path_to_params.ts";
 
 const ClientApp = ({ initData }: any) => (
   <Switch fallback={() => <Error404 />}>
@@ -28,24 +27,24 @@ const ClientApp = ({ initData }: any) => (
               };
               getParams() {
                 if (g_match.status) return g_match.params;
-                const params = pathToParams(path, location.pathname);
+                const params = parseParamsFromPath(path);
                 if (g_match.status === false) {
                   g_match = {
                     status: true,
-                    params: params || {},
+                    params: params
                   };
                 }
-                return params || {};
+                return params;
               }
               _props = {};
               status = false;
               async didMount() {
                 if (this.status && Page.initProps) {
                   if (g_match.status === false) {
-                    const params = pathToParams(path, location.pathname);
+                    const params = parseParamsFromPath(path);
                     g_match = {
                       status: true,
-                      params: params || {},
+                      params: params,
                     };
                   }
                   const props = await Page.initProps({

@@ -1,4 +1,7 @@
 // dependencies for client
+import { Router } from "../_core/nanossr.ts";
+import pathToParams from './../_core/path_to_params.ts';
+import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.9/src/request_event.ts";
 
 export {
   Component,
@@ -11,17 +14,19 @@ export {
   tw,
 } from "../_core/nanossr.ts";
 export type { FC } from "../_core/nanossr.ts";
-export {
+
+export const {
   Link,
   Listener,
   matchPath,
-  parseParamsFromPath,
   Route,
   Routes,
   Switch,
   to,
-} from "../_core/nano_router.ts";
-import { RequestEvent as BRequestEvent } from "https://deno.land/x/nhttp@1.1.9/src/request_event.ts";
+} = Router;
+
+export const parseParamsFromPath = (path: string) => pathToParams(path, location.pathname) || {};
+
 export type RequestEvent = BRequestEvent & {
   getBaseUrl: () => string;
   pathname: string;
