@@ -13,9 +13,10 @@
   "fmt": {
     "files": {
       "exclude": [
-        "public/"
+        "public/",
+        "server.js"
       ]
     }
   },
-  "importMap": "import_map.json"
+  "importMap": "./import_map.json"
 }

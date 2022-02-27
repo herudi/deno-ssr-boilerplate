@@ -1,7 +1,6 @@
 /** @jsx h */
-import { Component, h, Helmet } from "deps/nano_jsx.ts";
-import { PageProps } from "deps/types.ts";
-import { tw } from "deps/twind.ts";
+import { Component, h, Helmet, tw } from "nano_jsx";
+import { PageProps } from "types";
 
 const style = {
   button: "text-2xl px-6 py-2 text-sm font-semibold text-blue-800 bg-blue-100",

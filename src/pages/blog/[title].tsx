@@ -1,12 +1,7 @@
 /** @jsx h */
-import {
-  h,
-  Helmet,
-  Router
-} from "deps/nano_jsx.ts";
+import { h, Helmet, Router, tw } from "nano_jsx";
+import { PageProps, RequestEvent } from "types";
 import NProgress from "https://esm.sh/nprogress?no-check";
-import { PageProps, RequestEvent } from "deps/types.ts";
-import { tw } from "deps/twind.ts";
 
 const { Link } = Router;
 

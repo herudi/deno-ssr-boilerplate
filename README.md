@@ -5,7 +5,7 @@ for [Deno](https://deno.land) that uses [nanojsx](https://nanojsx.io/).
 
 Demo => https://deno-ssr-boilerplate.deno.dev
 
-> Note: under development. not ready for production.
+> Under development. not ready for production.
 
 ## Features
 
@@ -31,7 +31,7 @@ cd deno-ssr-boilerplate
 ### Run Development
 
 ```bash
-deno run -A --no-check dev.ts
+deno run -A --no-check script.ts --dev
 ```
 
 Open => http://localhost:8080/
@@ -39,22 +39,23 @@ Open => http://localhost:8080/
 ### Build Production
 
 ```bash
-deno run -A --no-check build.ts
+deno run -A --no-check script.ts --build
 ```
 
 ### Run Production
 
 ```bash
-deno run -A --no-check server.ts
+deno run -A --no-check server.js
 ```
 
 ### Example Code
 
-File : /pages/about.tsx
+File : /src/pages/about.tsx
 
 ```tsx
 /** @jsx h */
-import { h, Helmet, PageProps, RequestEvent, tw } from "../deps/client.ts";
+import { h, Helmet, PageProps, tw } from "nano_jsx";
+import { RequestEvent } from "types";
 
 function About(props: PageProps) {
   return (
@@ -84,10 +85,11 @@ About.initProps = async (rev: RequestEvent) => {
 export default About;
 ```
 
-File : /pages/api/about.ts
+File : /src/pages/api/about.ts
 
 ```ts
-import { HttpError, RequestEvent } from "../../deps/server.ts";
+import { HttpError } from "nhttp";
+import { RequestEvent } from "types";
 
 export default async function handler(rev: RequestEvent) {
   if (rev.request.method == "GET") {

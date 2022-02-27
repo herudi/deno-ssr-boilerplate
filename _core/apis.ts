@@ -1,10 +1,11 @@
 
-import { Router, Handler } from "deps/nhttp.ts";
-import $0 from "../pages/api/about.ts";
-import $1 from "../pages/api/blog/index.ts";
-import $2 from "../pages/api/blog/[title].ts";
-const api = new Router();
-const map = {} as Record<string, Handler>;
+import { Router, Handler } from "./deps/nhttp.ts";
+import { RequestEvent } from "./deps/types.ts";
+import $0 from "../src/pages/api/about.ts";
+import $1 from "../src/pages/api/blog/index.ts";
+import $2 from "../src/pages/api/blog/[title].ts";
+const api = new Router<RequestEvent>();
+const map = {} as Record<string, Handler<RequestEvent>>;
   
 map['/api/about.ts'] = $0;
 api.any('/about', $0);

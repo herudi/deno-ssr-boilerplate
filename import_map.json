@@ -1,5 +1,7 @@
 {
-    "imports": {
-        "deps/" : "./_core/deps/"
-    }
+  "imports": {
+    "nano_jsx": "./_core/deps/nano_jsx.ts",
+    "nhttp": "./_core/deps/nhttp.ts",
+    "types": "./_core/deps/types.ts"
+  }
 }

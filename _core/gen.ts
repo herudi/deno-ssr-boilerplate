@@ -4,7 +4,7 @@ export const STORAGE_KEY_PAGE = "95d6aa06f620";
 export const STORAGE_KEY_API = "01a2929d18cf";
 
 async function checkStat(arr: string[], dir: string, storage: any) {
-  const base = dir + "/pages";
+  const base = dir + "/src/pages";
   let status = false, new_entry = false;
   for (let i = 0; i < arr.length; i++) {
     const filename = arr[i];
@@ -47,7 +47,7 @@ function genPath(el: string) {
 function genRoutes(arr: string[], target: string) {
   if (target === "page") {
     return `
-${arr.map((el, i) => `import $${i} from "../pages${el}";`).join("\n")}
+${arr.map((el, i) => `import $${i} from "../src/pages${el}";`).join("\n")}
 export default [
   ${
       arr.map((el, i) => {
@@ -62,10 +62,11 @@ export default [
 `;
   }
   return `
-import { Router, Handler } from "deps/nhttp.ts";
-${arr.map((el, i) => `import $${i} from "../pages${el}";`).join("\n")}
-const api = new Router();
-const map = {} as Record<string, Handler>;
+import { Router, Handler } from "./deps/nhttp.ts";
+import { RequestEvent } from "./deps/types.ts";
+${arr.map((el, i) => `import $${i} from "../src/pages${el}";`).join("\n")}
+const api = new Router<RequestEvent>();
+const map = {} as Record<string, Handler<RequestEvent>>;
   ${
     arr.map((el, i) => {
       const path = genPath(el);
@@ -89,7 +90,7 @@ export async function genPages(refresh = false, dir: string = Deno.cwd()) {
     );
     const page_list = [];
     const api_list = [];
-    const pages_dir = join(dir, "./pages");
+    const pages_dir = join(dir, "./src/pages");
     const url = toFileUrl(pages_dir);
     const it = walk(pages_dir, {
       includeDirs: false,

@@ -1,8 +1,9 @@
 /** @jsx h */
 
 import { h } from "./deps/nano_jsx.ts";
-import { ssr } from "./nanossr.ts";
-import { NHttp, RequestEvent } from "./deps/nhttp.ts";
+import { ssr } from "./deps/nano_ssr.ts";
+import { NHttp } from "./deps/nhttp.ts";
+import { RequestEvent } from "./deps/types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import { refresh } from "https://deno.land/x/refresh@1.0.0/mod.ts";
 
@@ -10,8 +11,8 @@ import RootApp from "./root_app.tsx";
 import { genPages } from "./gen.ts";
 import pages from "./pages.ts";
 import apis from "./apis.ts";
-import Error404 from "../components/error/404.tsx";
-import ErrorPage from "../components/error/error.tsx";
+import Error404 from "../src/components/error/404.tsx";
+import ErrorPage from "../src/components/error/error.tsx";
 
 const timestamp = new Date().getTime();
 
@@ -20,13 +21,10 @@ let emit: any;
 
 const app = new NHttp<
   RequestEvent & {
-    getBaseUrl: () => string;
     render: (
       Page: any,
       props: { path: string; initData?: any },
     ) => Record<string, any>;
-    handler: (targetFile: string) => Promise<any>;
-    env: string;
   }
 >({ env });
 
@@ -43,14 +41,14 @@ if (env === "development") {
       jsxFactory: "h",
       jsxFragmentFactory: "Fragment",
     },
-    importMapPath: "./import_map.json"
+    importMapPath: "./import_map.json",
   };
   emit = await Deno.emit(
     `./_core/hydrate.tsx`,
     emitOptios,
   );
   const midd = refresh({
-    paths: "./pages/",
+    paths: "./src/pages/",
   });
   app.use((rev, next) => {
     const res = midd(rev.request);

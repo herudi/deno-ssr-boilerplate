@@ -4,8 +4,8 @@
 import {
   Helmet,
   renderSSR as nanoRender,
-} from "./deps/nano_jsx.ts";
-import { setup } from "./deps/twind.ts";
+} from "https://cdn.skypack.dev/nano-jsx@v0.0.30-dev.1?dts";
+import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
 import {
   getStyleTag,
   virtualSheet,

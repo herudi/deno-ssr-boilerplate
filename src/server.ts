@@ -1,4 +1,4 @@
-import { http } from "./_core/server.tsx";
+import { http } from "./../_core/server.tsx";
 
 // some code here
 

@@ -1,4 +1,5 @@
-import { HttpError, RequestEvent } from "deps/nhttp.ts";
+import { HttpError } from "nhttp";
+import { RequestEvent } from "types";
 
 export default async function handler(rev: RequestEvent) {
   if (rev.request.method == "GET") {

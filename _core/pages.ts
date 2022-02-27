@@ -1,8 +1,8 @@
 
-import $0 from "../pages/about.tsx";
-import $1 from "../pages/blog/index.tsx";
-import $2 from "../pages/blog/[title].tsx";
-import $3 from "../pages/index.tsx";
+import $0 from "../src/pages/about.tsx";
+import $1 from "../src/pages/blog/index.tsx";
+import $2 from "../src/pages/blog/[title].tsx";
+import $3 from "../src/pages/index.tsx";
 export default [
   { 
     path: '/about',

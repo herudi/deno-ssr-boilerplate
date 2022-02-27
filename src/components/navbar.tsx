@@ -1,7 +1,6 @@
 /** @jsx h */
-import { h, Router } from "deps/nano_jsx.ts";
-import { tw } from "deps/twind.ts";
-import { PageProps } from "deps/types.ts";
+import { h, Router, tw } from "nano_jsx";
+import { PageProps } from "types";
 
 const { Link } = Router;
 
@@ -28,15 +27,17 @@ export function Navbar({ route }: PageProps) {
                   Home
                 </Link>
                 <Link
-                  class={tw`${route.pathname.startsWith("/blog") ? active : in_active
-                    }`}
+                  class={tw`${
+                    route.pathname.startsWith("/blog") ? active : in_active
+                  }`}
                   to="/blog"
                 >
                   Blog
                 </Link>
                 <Link
-                  class={tw`${route.pathname === "/about" ? active : in_active
-                    }`}
+                  class={tw`${
+                    route.pathname === "/about" ? active : in_active
+                  }`}
                   to="/about"
                 >
                   About

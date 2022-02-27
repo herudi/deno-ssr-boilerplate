@@ -1,14 +1,14 @@
 /** @jsx h */
-import App from "../pages/_app.tsx";
+import App from "../src/pages/_app.tsx";
 import {
   Component,
   h,
   Helmet,
   parseParamsFromPath,
-  Router
+  Router,
 } from "./deps/nano_jsx.ts";
 import pages from "./pages.ts";
-import Error404 from "../components/error/404.tsx";
+import Error404 from "../src/components/error/404.tsx";
 
 const { Switch, Route } = Router;
 
