@@ -1,6 +1,7 @@
 /** @jsx h */
+import { h, Helmet } from "deps/nano_jsx.ts";
+import { AppProps } from "deps/types.ts";
 import { Navbar } from "./../components/navbar.tsx";
-import { AppProps, h, Helmet } from "../deps/client.ts";
 
 function App({ Component, props }: AppProps) {
   return (

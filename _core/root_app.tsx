@@ -5,11 +5,12 @@ import {
   h,
   Helmet,
   parseParamsFromPath,
-  Route,
-  Switch,
-} from "../deps/client.ts";
+  Router
+} from "./deps/nano_jsx.ts";
 import pages from "./pages.ts";
 import Error404 from "../components/error/404.tsx";
+
+const { Switch, Route } = Router;
 
 const ClientApp = ({ initData }: any) => (
   <Switch fallback={() => <Error404 />}>

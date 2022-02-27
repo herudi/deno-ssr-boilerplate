@@ -1,9 +1,11 @@
 /** @jsx h */
 
-import { h, ssr } from "../deps/client.ts";
-import { NHttp, RequestEvent } from "../deps/server.ts";
+import { h } from "./deps/nano_jsx.ts";
+import { ssr } from "./nanossr.ts";
+import { NHttp, RequestEvent } from "./deps/nhttp.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import { refresh } from "https://deno.land/x/refresh@1.0.0/mod.ts";
+
 import RootApp from "./root_app.tsx";
 import { genPages } from "./gen.ts";
 import pages from "./pages.ts";
@@ -41,6 +43,7 @@ if (env === "development") {
       jsxFactory: "h",
       jsxFragmentFactory: "Fragment",
     },
+    importMapPath: "./import_map.json"
   };
   emit = await Deno.emit(
     `./_core/hydrate.tsx`,
@@ -63,6 +66,7 @@ app.use((rev, next) => {
   rev.env = env;
   rev.pathname = rev.path;
   rev.handler = async (name) => {
+    if (!name.startsWith("/")) name = "/" + name;
     return await apis.map[name](rev, next);
   };
   rev.render = (Page, props) => {

@@ -1,14 +1,11 @@
 // from https://crux.land/nanossr@0.0.1
 // update : head.join("\n") and status
 
-export * from "https://cdn.skypack.dev/nano-jsx@v0.0.30-dev.1?dts";
-export { tw } from "https://cdn.skypack.dev/twind@0.16.16";
-
 import {
   Helmet,
   renderSSR as nanoRender,
-} from "https://cdn.skypack.dev/nano-jsx@v0.0.30-dev.1?dts";
-import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
+} from "./deps/nano_jsx.ts";
+import { setup } from "./deps/twind.ts";
 import {
   getStyleTag,
   virtualSheet,

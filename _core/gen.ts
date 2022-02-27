@@ -1,4 +1,4 @@
-import { join, resolve, toFileUrl, walk } from "../deps/dev.ts";
+import { join, resolve, toFileUrl, walk } from "./deps/dev.ts";
 
 export const STORAGE_KEY_PAGE = "95d6aa06f620";
 export const STORAGE_KEY_API = "01a2929d18cf";
@@ -62,10 +62,9 @@ export default [
 `;
   }
   return `
-import { HttpApi } from "../deps/server.ts";
-import { Handler } from "../deps/server.ts";
+import { Router, Handler } from "deps/nhttp.ts";
 ${arr.map((el, i) => `import $${i} from "../pages${el}";`).join("\n")}
-const api = new HttpApi();
+const api = new Router();
 const map = {} as Record<string, Handler>;
   ${
     arr.map((el, i) => {

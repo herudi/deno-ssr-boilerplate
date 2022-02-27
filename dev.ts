@@ -1,4 +1,4 @@
-import { join, resolve, toFileUrl } from "./deps/dev.ts";
+import { join, resolve, toFileUrl } from "./_core/deps/dev.ts";
 import {
   genRoutesWithRefresh,
   STORAGE_KEY_API,

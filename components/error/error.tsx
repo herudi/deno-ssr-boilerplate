@@ -1,5 +1,6 @@
 /** @jsx h */
-import { h, tw } from "../../deps/client.ts";
+import { h } from "deps/nano_jsx.ts";
+import { tw } from "deps/twind.ts";
 
 function ErrorPage({ message, status }: any) {
   return (

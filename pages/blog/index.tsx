@@ -2,12 +2,13 @@
 import {
   h,
   Helmet,
-  Link,
-  PageProps,
-  RequestEvent,
-  tw,
-} from "../../deps/client.ts";
+  Router
+} from "deps/nano_jsx.ts";
+import { PageProps, RequestEvent } from "deps/types.ts";
+import { tw } from "deps/twind.ts";
 import NProgress from "https://esm.sh/nprogress?no-check";
+
+const { Link } = Router;
 
 function Blog({ data, isServer }: PageProps) {
   if (!isServer) {

@@ -1,5 +1,9 @@
 /** @jsx h */
-import { h, Link, PageProps, tw } from "../deps/client.ts";
+import { h, Router } from "deps/nano_jsx.ts";
+import { tw } from "deps/twind.ts";
+import { PageProps } from "deps/types.ts";
+
+const { Link } = Router;
 
 const active =
   "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium";
@@ -24,17 +28,15 @@ export function Navbar({ route }: PageProps) {
                   Home
                 </Link>
                 <Link
-                  class={tw`${
-                    route.pathname.startsWith("/blog") ? active : in_active
-                  }`}
+                  class={tw`${route.pathname.startsWith("/blog") ? active : in_active
+                    }`}
                   to="/blog"
                 >
                   Blog
                 </Link>
                 <Link
-                  class={tw`${
-                    route.pathname === "/about" ? active : in_active
-                  }`}
+                  class={tw`${route.pathname === "/about" ? active : in_active
+                    }`}
                   to="/about"
                 >
                   About

@@ -14,6 +14,7 @@ try {
       jsxFactory: "h",
       jsxFragmentFactory: "Fragment",
     },
+    importMapPath: "./import_map.json"
   };
   const emit = await Deno.emit(
     `./_core/hydrate.tsx`,

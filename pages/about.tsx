@@ -1,5 +1,7 @@
 /** @jsx h */
-import { h, Helmet, PageProps, RequestEvent, tw } from "../deps/client.ts";
+import { h, Helmet } from "deps/nano_jsx.ts";
+import { PageProps, RequestEvent } from "deps/types.ts";
+import { tw } from "deps/twind.ts";
 
 function About(props: PageProps) {
   return (

@@ -2,12 +2,13 @@
 import {
   h,
   Helmet,
-  Link,
-  PageProps,
-  RequestEvent,
-  tw,
-} from "../../deps/client.ts";
+  Router
+} from "deps/nano_jsx.ts";
 import NProgress from "https://esm.sh/nprogress?no-check";
+import { PageProps, RequestEvent } from "deps/types.ts";
+import { tw } from "deps/twind.ts";
+
+const { Link } = Router;
 
 function BlogDetail({ data, isServer, getParams }: PageProps) {
   const params = getParams();
@@ -17,7 +18,7 @@ function BlogDetail({ data, isServer, getParams }: PageProps) {
   return (
     <div>
       <Helmet>
-        <title>{(data || {}).title || ""}</title>
+        <title>{params.title}</title>
       </Helmet>
       <div class={tw`bg-white flex h-screen`}>
         <div
