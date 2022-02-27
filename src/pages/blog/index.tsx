@@ -2,13 +2,12 @@
 import { h, Helmet, Router, tw } from "nano_jsx";
 import { PageProps, RequestEvent } from "types";
 import NProgress from "https://esm.sh/nprogress?no-check";
+import Loading from "../../components/loading.tsx";
 
 const { Link } = Router;
 
-function Blog({ data, isServer }: PageProps) {
-  if (!isServer) {
-    window.scrollTo(0, 0);
-  }
+function Blog({ data }: PageProps) {
+  if (!data) return <Loading />;
   return (
     <div>
       <Helmet head>
@@ -31,38 +30,37 @@ function Blog({ data, isServer }: PageProps) {
             </p>
           </header>
           <div class={tw`space-y-16`}>
-            {data &&
-              data.map((el: any) => (
-                <article
+            {data.map((el: any) => (
+              <article
+                class={tw
+                  `relative flex flex-col max-w-3xl lg:ml-auto xl:max-w-none xl:w-[50rem]`}
+              >
+                <h3 class={tw`mb-4 text-xl tracking-tight font-bold`}>
+                  <Link to={"/blog/" + el.title}>{el.title}</Link>
+                </h3>
+                <div class={tw`mb-6`}>
+                  <p>{el.body}</p>
+                </div>
+                <div
                   class={tw
-                    `relative flex flex-col max-w-3xl lg:ml-auto xl:max-w-none xl:w-[50rem]`}
+                    `mt-auto flex flex-row-reverse items-center justify-end`}
                 >
-                  <h3 class={tw`mb-4 text-xl tracking-tight font-bold`}>
-                    <Link to={"/blog/" + el.title}>{el.title}</Link>
-                  </h3>
-                  <div class={tw`mb-6`}>
-                    <p>{el.body}</p>
-                  </div>
                   <div
                     class={tw
-                      `mt-auto flex flex-row-reverse items-center justify-end`}
+                      `text-sm leading-6 lg:absolute lg:top-0 lg:right-full lg:mr-8 lg:whitespace-nowrap`}
                   >
-                    <div
-                      class={tw
-                        `text-sm leading-6 lg:absolute lg:top-0 lg:right-full lg:mr-8 lg:whitespace-nowrap`}
-                    >
-                      January, 12 2030
-                    </div>
-                    <Link
-                      to={"/blog/" + el.title}
-                      class={tw
-                        `px-6 py-2 text-sm font-semibold text-blue-800 bg-blue-100`}
-                    >
-                      Read More
-                    </Link>
+                    January, 12 2030
                   </div>
-                </article>
-              ))}
+                  <Link
+                    to={"/blog/" + el.title}
+                    class={tw
+                      `px-6 py-2 text-sm font-semibold text-blue-800 bg-blue-100`}
+                  >
+                    Read More
+                  </Link>
+                </div>
+              </article>
+            ))}
           </div>
         </main>
       </div>
@@ -78,6 +76,7 @@ Blog.initProps = async (rev: RequestEvent) => {
     NProgress.start();
     data = await (await fetch(rev.getBaseUrl() + "/api/blog")).json();
     NProgress.done();
+    window.scrollTo(0, 0);
   }
   return { data };
 };

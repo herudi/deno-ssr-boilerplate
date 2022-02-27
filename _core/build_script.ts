@@ -11,6 +11,8 @@ try {
     throw error;
   }
   await esbuild.build({
+    jsxFactory: "h",
+    jsxFragment: "Fragment",
     bundle: true,
     format: "esm",
     target: ["esnext"],
@@ -49,5 +51,6 @@ try {
   console.log("Run Production: deno run -A --no-check server.js");
   esbuild.stop();
 } catch (error) {
-  console.log(error);
+  console.log(error.message);
+  esbuild.stop();
 }
