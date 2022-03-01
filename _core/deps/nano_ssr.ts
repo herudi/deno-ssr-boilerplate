@@ -4,7 +4,7 @@
 import {
   Helmet,
   renderSSR as nanoRender,
-} from "https://cdn.skypack.dev/nano-jsx@v0.0.30-dev.1?dts";
+} from "https://deno.land/x/nano_jsx@v0.0.30/mod.ts";
 import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
 import {
   getStyleTag,
