@@ -4,7 +4,7 @@ import RootApp from "./root_app.tsx";
 
 window.addEventListener("load", () => {
   hydrate(
-    <RootApp initData={(window as any).__INIT_DATA__ || {}} />,
+    <RootApp />,
     document.getElementById("root"),
   );
 });

@@ -9,7 +9,8 @@ Demo => https://deno-ssr-boilerplate.deno.dev
 
 ## Features
 
-- Pure Deno Ecosystem.
+- Support for [Deno Deploy](https://deno.com/deploy) and
+  [Deno](https://deno.land).
 - Dynamic routes page and api/handler.
 - Tailwind out of the box.
 
@@ -48,14 +49,16 @@ deno run -A --no-check script.ts --build
 deno run -A --no-check server.js
 ```
 
+Generate deploy.js and ready to deploy to [Deno Deploy](https://deno.com/deploy)
+
 ### Example Code
 
 File : /src/pages/about.tsx
 
 ```tsx
 /** @jsx h */
-import { h, Helmet, PageProps, tw } from "nano_jsx";
-import { RequestEvent } from "types";
+import { h, Helmet, tw } from "nano_jsx";
+import { PageProps, RequestEvent } from "types";
 
 function About(props: PageProps) {
   return (
@@ -65,7 +68,7 @@ function About(props: PageProps) {
       </Helmet>
       <div class={tw`bg-white flex h-screen`}>
         <h1 class={tw`text-5xl text-green-600 m-auto mt-20`}>
-          {props.title || "loading..."}
+          {props.title}
         </h1>
       </div>
     </div>

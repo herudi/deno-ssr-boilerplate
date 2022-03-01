@@ -14,7 +14,8 @@ import apis from "./apis.ts";
 import Error404 from "../src/components/error/404.tsx";
 import ErrorPage from "../src/components/error/error.tsx";
 
-const timestamp = new Date().getTime();
+const clientScript = "/assets/hydrates/app.js";
+const tt = Date.now();
 
 const env = (Deno.args || []).includes("--dev") ? "development" : "production";
 let emit: any;
@@ -29,9 +30,6 @@ const app = new NHttp<
 >({ env });
 
 if (env === "development") {
-  try {
-    await Deno.remove(Deno.cwd() + "/public/hydrate.js");
-  } catch (_e) { /* noop */ }
   await genPages();
   const emitOptios: Deno.EmitOptions = {
     check: false,
@@ -71,8 +69,6 @@ app.use((rev, next) => {
     return ssr(
       <RootApp
         isServer={true}
-        env={env}
-        timestamp={timestamp}
         initData={props.initData || {}}
         Page={Page}
         getParams={() => rev.params}
@@ -82,6 +78,7 @@ app.use((rev, next) => {
           path: props.path,
         }}
       />,
+      { clientScript, env, initData: props.initData || {}, tt },
     );
   };
   return next();
@@ -93,26 +90,12 @@ for (let i = 0; i < pages.length; i++) {
     rev.getBaseUrl = () => new URL(rev.request.url).origin;
     const Page = route.page as any;
     const initData = Page.initProps ? (await Page.initProps(rev)) : {};
-    return ssr(
-      <RootApp
-        isServer={true}
-        env={env}
-        timestamp={timestamp}
-        initData={initData}
-        Page={Page}
-        getParams={() => rev.params}
-        route={{
-          url: rev.url,
-          pathname: rev.path,
-          path: route.path,
-        }}
-      />,
-    );
+    return rev.render(Page, { path: route.path, initData });
   });
 }
 
 if (emit) {
-  app.get("/assets/hydrate.js", ({ response }) => {
+  app.get(clientScript, ({ response }) => {
     response.type("application/javascript");
     return emit.files["deno:///bundle.js"];
   });
@@ -124,11 +107,9 @@ app.on404((rev) => {
   if (rev.path.startsWith("/api/")) {
     return { status: 404, message: `route ${rev.url} not found` };
   }
-  return ssr(
-    () => <Error404 message={`route ${rev.url} not found`} status={404} />,
-    void 0,
-    404,
-  );
+  return ssr(<Error404 message={`route ${rev.url} not found`} status={404} />, {
+    status: 404,
+  });
 });
 app.onError((err, rev) => {
   const status = rev.response.status();
@@ -136,9 +117,10 @@ app.onError((err, rev) => {
     return { status, message: err.message };
   }
   return ssr(
-    () => <ErrorPage message={err.message} status={status} />,
-    void 0,
-    status as number,
+    <ErrorPage message={err.message} status={status} />,
+    {
+      status,
+    },
   );
 });
 

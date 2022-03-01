@@ -16,8 +16,8 @@ export type RouteProps = {
 
 export type PageProps = {
   route: RouteProps;
-  getParams: () => Record<string, any>;
-  isServer: boolean;
+  // getParams: () => Record<string, any>;
+  // isServer: boolean;
   [k: string]: any;
 };
 

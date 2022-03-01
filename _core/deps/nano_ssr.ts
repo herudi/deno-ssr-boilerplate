@@ -1,10 +1,7 @@
 // from https://crux.land/nanossr@0.0.1
 // update : head.join("\n") and status
 
-import {
-  Helmet,
-  renderSSR as nanoRender,
-} from "https://deno.land/x/nano_jsx@v0.0.30/mod.ts";
+import { Helmet, renderSSR } from "https://deno.land/x/nano_jsx@v0.0.30/mod.ts";
 import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
 import {
   getStyleTag,
@@ -24,7 +21,9 @@ function setupSheet(twOptions: Record<string, any>) {
   return sheet;
 }
 
-const html = ({ body, head, footer, styleTag }: any) => (`<!DOCTYPE html>
+const html = (
+  { body, head, footer, styleTag, clientScript, env, initData, tt }: any,
+) => (`<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -35,17 +34,22 @@ const html = ({ body, head, footer, styleTag }: any) => (`<!DOCTYPE html>
   <body>
     ${body}
     ${footer.join("\n    ")}
+    <script>window.__INIT_DATA__ = ${JSON.stringify(initData)}</script>${
+  env === "development"
+    ? '<script src="/assets/js/refresh_client.js"></script>'
+    : ""
+}<script async src="${clientScript + "?v=" + tt}"></script>
   </body>
 <html>
 `);
 
-export function ssr(Component: any, options?: any, status = 200) {
-  sheet(options?.tw ?? {}).reset();
-  const app = nanoRender(Component, options);
+export function ssr(Component: any, opts: Record<string, any> = {}) {
+  sheet(opts.tw ?? {}).reset();
+  const app = renderSSR(Component, opts);
   const { body, head, footer } = Helmet.SSR(app);
   const styleTag = getStyleTag(sheet());
   return new Response(
-    html({ body, head, footer, styleTag }),
-    { headers: { "content-type": "text/html" }, status },
+    html({ ...opts, body, head, footer, styleTag }),
+    { headers: { "content-type": "text/html" }, status: opts.status || 200 },
   );
 }

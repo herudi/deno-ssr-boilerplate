@@ -23,7 +23,7 @@ try {
     treeShaking: true,
     minify: true,
     entryPoints: ["./src/server.ts"],
-    outfile: "./server.js",
+    outfile: "./deploy.js",
     plugins: [esbuild_import_map.plugin()],
     logLevel: "silent",
   });
@@ -46,9 +46,9 @@ try {
     minify: true,
     treeShaking: true,
   })).code;
-  await Deno.writeTextFile(Deno.cwd() + "/public/hydrate.js", script);
+  await Deno.writeTextFile(Deno.cwd() + "/public/hydrates/app.js", script);
   console.log("Success Build !!");
-  console.log("Run Production: deno run -A --no-check server.js");
+  console.log("Run Production: deno run -A --no-check deploy.js");
   esbuild.stop();
 } catch (error) {
   console.log(error.message);
