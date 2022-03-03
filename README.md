@@ -17,7 +17,6 @@ Demo => https://deno-ssr-boilerplate.deno.dev
 ## Includes
 
 - [nanojsx](https://nanojsx.io/)
-- [nanossr](https://crux.land/nanossr@0.0.1)
 - [nhttp](https://nhttp.deno.dev)
 - [refresh](https://deno.land/x/refresh)
 - more
@@ -57,7 +56,8 @@ File : /src/pages/about.tsx
 
 ```tsx
 /** @jsx h */
-import { h, Helmet, tw } from "nano_jsx";
+import { h, Helmet } from "nano-jsx";
+import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
 
 function About(props: PageProps) {
@@ -75,7 +75,7 @@ function About(props: PageProps) {
   );
 }
 
-// ssr first
+// ssr first (optionals)
 About.initProps = async (rev: RequestEvent) => {
   if (rev.isServer) {
     // don't fetch self server :). use handler instead.

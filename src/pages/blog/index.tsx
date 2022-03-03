@@ -1,13 +1,12 @@
 /** @jsx h */
-import { h, Helmet, Router, tw } from "nano_jsx";
+import { h, Helmet, Router } from "nano-jsx";
+import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
 import NProgress from "https://esm.sh/nprogress?no-check";
-import Loading from "../../components/loading.tsx";
 
 const { Link } = Router;
 
 function Blog({ data }: PageProps) {
-  if (!data) return <Loading />;
   return (
     <div>
       <Helmet head>
@@ -73,9 +72,7 @@ Blog.initProps = async (rev: RequestEvent) => {
   if (rev.isServer) {
     data = await rev.handler("/api/blog/index.ts");
   } else {
-    NProgress.start();
     data = await (await fetch(rev.getBaseUrl() + "/api/blog")).json();
-    NProgress.done();
     window.scrollTo(0, 0);
   }
   return { data };

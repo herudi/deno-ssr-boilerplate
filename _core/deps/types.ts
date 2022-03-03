@@ -11,13 +11,13 @@ export type RouteProps = {
   url: string;
   pathname: string;
   path: string;
+  params: Record<string, any>;
   [k: string]: any;
 };
 
 export type PageProps = {
   route: RouteProps;
-  // getParams: () => Record<string, any>;
-  // isServer: boolean;
+  isServer: boolean;
   [k: string]: any;
 };
 

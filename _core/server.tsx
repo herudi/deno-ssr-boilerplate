@@ -1,18 +1,22 @@
 /** @jsx h */
 
-import { h } from "./deps/nano_jsx.ts";
+import { h } from "nano-jsx";
 import { ssr } from "./deps/nano_ssr.ts";
-import { NHttp } from "./deps/nhttp.ts";
+import { NHttp } from "nhttp";
 import { RequestEvent } from "./deps/types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import { refresh } from "https://deno.land/x/refresh@1.0.0/mod.ts";
-
 import RootApp from "./root_app.tsx";
 import { genPages } from "./gen.ts";
 import pages from "./pages.ts";
 import apis from "./apis.ts";
 import Error404 from "../src/components/error/404.tsx";
 import ErrorPage from "../src/components/error/error.tsx";
+
+import * as esbuild from "https://deno.land/x/esbuild@v0.14.22/mod.js";
+import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no-check";
+
+import map from "./../import_map.json" assert { type: "json" };
 
 const clientScript = "/assets/hydrates/app.js";
 const tt = Date.now();
@@ -31,20 +35,21 @@ const app = new NHttp<
 
 if (env === "development") {
   await genPages();
-  const emitOptios: Deno.EmitOptions = {
-    check: false,
-    bundle: "module",
-    compilerOptions: {
-      lib: ["dom", "dom.iterable", "esnext"],
-      jsxFactory: "h",
-      jsxFragmentFactory: "Fragment",
+  map.imports["nano-jsx"] = map.imports["nano-jsx-client"];
+  esbuild_import_map.load(map as any);
+  await esbuild.build({
+    jsxFactory: "h",
+    jsxFragment: "Fragment",
+    bundle: true,
+    format: "esm",
+    loader: {
+      ".ts": "ts",
+      ".tsx": "tsx",
     },
-    importMapPath: "./import_map.json",
-  };
-  emit = await Deno.emit(
-    `./_core/hydrate.tsx`,
-    emitOptios,
-  );
+    entryPoints: ["./_core/hydrate.tsx"],
+    outfile: "./public/hydrates/app.js",
+    plugins: [esbuild_import_map.plugin()],
+  });
   const midd = refresh({
     paths: "./src/pages/",
   });
@@ -71,11 +76,11 @@ app.use((rev, next) => {
         isServer={true}
         initData={props.initData || {}}
         Page={Page}
-        getParams={() => rev.params}
         route={{
           url: rev.url,
           pathname: rev.path,
           path: props.path,
+          params: rev.params,
         }}
       />,
       { clientScript, env, initData: props.initData || {}, tt },

@@ -1,5 +1,5 @@
 // from https://crux.land/nanossr@0.0.1
-// update : head.join("\n") and status
+// update : head.join("\n"), hydrate and more.
 
 import { Helmet, renderSSR } from "https://deno.land/x/nano_jsx@v0.0.30/mod.ts";
 import { setup } from "https://cdn.skypack.dev/twind@0.16.16";
@@ -32,13 +32,16 @@ const html = (
     ${styleTag}
   </head>
   <body>
-    ${body}
-    ${footer.join("\n    ")}
+    <div id="root">${body}</div>
     <script>window.__INIT_DATA__ = ${JSON.stringify(initData)}</script>${
+  footer.join("\n    ")
+}${
   env === "development"
     ? '<script src="/assets/js/refresh_client.js"></script>'
     : ""
-}<script async src="${clientScript + "?v=" + tt}"></script>
+}<script type="${
+  env === "development" ? "module" : "application/javascript"
+}" src="${clientScript + "?v=" + tt}"></script>
   </body>
 <html>
 `);

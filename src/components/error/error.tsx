@@ -1,5 +1,6 @@
 /** @jsx h */
-import { h, tw } from "nano_jsx";
+import { h } from "nano-jsx";
+import { tw } from "twind";
 
 function ErrorPage({ message, status }: any) {
   return (

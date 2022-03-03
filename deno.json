@@ -14,7 +14,7 @@
     "files": {
       "exclude": [
         "public/",
-        "server.js"
+        "deploy.js"
       ]
     }
   },

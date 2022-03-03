@@ -1,5 +1,5 @@
 
-import { Router, Handler } from "./deps/nhttp.ts";
+import { Router, Handler } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
 import { RequestEvent } from "./deps/types.ts";
 import $0 from "../src/pages/api/about.ts";
 import $1 from "../src/pages/api/blog/index.ts";

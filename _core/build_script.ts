@@ -6,6 +6,10 @@ import map from "./../import_map.json" assert { type: "json" };
 esbuild_import_map.load(map as any);
 
 try {
+  await Deno.mkdir(Deno.cwd() + "/public/hydrates");
+} catch (_e) { /* noop */ }
+
+try {
   const error = await genRoutesWithRefresh();
   if (error) {
     throw error;

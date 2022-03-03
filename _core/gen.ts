@@ -62,7 +62,7 @@ export default [
 `;
   }
   return `
-import { Router, Handler } from "./deps/nhttp.ts";
+import { Router, Handler } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
 import { RequestEvent } from "./deps/types.ts";
 ${arr.map((el, i) => `import $${i} from "../src/pages${el}";`).join("\n")}
 const api = new Router<RequestEvent>();

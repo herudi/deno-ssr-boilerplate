@@ -1,10 +1,11 @@
 /** @jsx h */
-import { h, Helmet, tw } from "nano_jsx";
+import { h, Helmet } from "nano-jsx";
+import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
 
 function About(props: PageProps) {
   return (
-    <div>
+    <div id="about">
       <Helmet>
         <title>{props.title}</title>
       </Helmet>

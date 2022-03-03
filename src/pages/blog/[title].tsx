@@ -1,17 +1,15 @@
 /** @jsx h */
-import { h, Helmet, Router, tw } from "nano_jsx";
+import { h, Helmet, Router } from "nano-jsx";
+import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
-import NProgress from "https://esm.sh/nprogress?no-check";
-import Loading from "../../components/loading.tsx";
 
 const { Link } = Router;
 
-function BlogDetail({ data, params }: PageProps) {
-  if (!data) return <Loading />;
+function BlogDetail({ data, route }: PageProps) {
   return (
     <div>
       <Helmet>
-        <title>{params.title}</title>
+        <title>{route.params.title}</title>
       </Helmet>
       <div class={tw`bg-white flex h-screen`}>
         <div
@@ -26,7 +24,7 @@ function BlogDetail({ data, params }: PageProps) {
               class={tw
                 `col-span-full text-3xl sm:text-4xl sm:text-center xl:mb-16 font-extrabold tracking-tight`}
             >
-              {params.title}
+              {route.params.title}
             </h1>
             <p class={tw`mb-20`}>{data.body}</p>
             <Link
@@ -48,13 +46,11 @@ BlogDetail.initProps = async (rev: RequestEvent) => {
   if (rev.isServer) {
     data = await rev.handler("/api/blog/[title].ts");
   } else {
-    NProgress.start();
     data = await fetch(rev.getBaseUrl() + "/api/blog/" + rev.params.title);
     data = await data.json();
-    NProgress.done();
     window.scrollTo(0, 0);
   }
-  return { data: data[0] || {}, params: rev.params };
+  return { data: data[0] || {} };
 };
 
 export default BlogDetail;

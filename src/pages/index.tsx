@@ -1,5 +1,6 @@
 /** @jsx h */
-import { Component, h, Helmet, tw } from "nano_jsx";
+import { Component, h, Helmet } from "nano-jsx";
+import { tw } from "twind";
 import { PageProps } from "types";
 
 const style = {
