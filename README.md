@@ -45,7 +45,7 @@ deno run -A --no-check script.ts --build
 ### Run Production
 
 ```bash
-deno run -A --no-check server.js
+deno run -A --no-check deploy.js
 ```
 
 Generate deploy.js and ready to deploy to [Deno Deploy](https://deno.com/deploy)
