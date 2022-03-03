@@ -13,11 +13,8 @@ window.addEventListener("load", () => {
       const init = (window as any).__INIT_DATA__;
       let initData = {};
       try {
-        let timeout: any;
         if (!init && RootApp.event.onStart !== void 0) {
-          timeout = setTimeout(() => {
-            RootApp.event.onStart(ctx);
-          }, 300);
+          RootApp.event.onStart(ctx);
         }
         initData = init || (Page.initProps
           ? (await Page.initProps({
@@ -32,10 +29,6 @@ window.addEventListener("load", () => {
         if ((window as any).__INIT_DATA__) {
           delete (window as any).__INIT_DATA__;
         }
-        if (!init && RootApp.event.onEnd !== void 0) {
-          if (timeout) clearTimeout(timeout);
-          RootApp.event.onEnd(ctx);
-        }
         ctx.render(
           <RootApp
             Page={obj.page}
@@ -49,6 +42,9 @@ window.addEventListener("load", () => {
             isServer={false}
           />,
         );
+        if (!init && RootApp.event.onEnd !== void 0) {
+          RootApp.event.onEnd(ctx);
+        }
       } catch (err) {
         if (RootApp.event.onError !== void 0) {
           RootApp.event.onError(err, ctx);

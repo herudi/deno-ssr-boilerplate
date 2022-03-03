@@ -20,16 +20,24 @@ function App({ Component, props }: AppProps) {
   );
 }
 
+// example load NProgress showing if timeout > 300ms
+let timeout: any;
+
 App.onStart = () => {
-  NProgress.start();
+  timeout = setTimeout(() => {
+    NProgress.start();
+  }, 300);
 };
 
 App.onEnd = () => {
+  if (timeout) clearTimeout(timeout);
   NProgress.done();
 };
 
 App.onError = (err: Error) => {
   alert(err.message || "Something went wrong");
 };
+
+// onStart, onEnd and onError run on client side only
 
 export default App;
