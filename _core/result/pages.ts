@@ -17,5 +17,5 @@ export const map_pages = [
     page: './index.js'
   },
 ];
-export const tt: string = '1646383463325';
+export const tt: string = '1646383700334';
 export const env: string = 'production';
