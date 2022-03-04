@@ -94,7 +94,6 @@ app.use((rev, next) => {
 for (let i = 0; i < pages.length; i++) {
   const route: any = pages[i];
   app.get(route.path, async (rev) => {
-    rev.getBaseUrl = () => new URL(rev.request.url).origin;
     const Page = route.page as any;
     const initData = Page.initProps ? (await Page.initProps(rev)) : {};
     return rev.render(Page, { path: route.path, initData });
@@ -109,13 +108,6 @@ if (emit) {
 }
 
 app.use("/api", apis.api as any);
-
-if (emit) {
-  app.get("/assets/hydrates/app.js", ({ response }) => {
-    response.type("application/javascript");
-    return emit.files["deno:///bundle.js"];
-  });
-}
 
 app.on404((rev) => {
   if (rev.path.startsWith("/api/")) {
