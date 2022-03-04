@@ -57,9 +57,10 @@ if (env === "development") {
     return next();
   });
 } else {
+  const base_url = import.meta.url.replace("/deploy.js", "");
   for (let i = 0; i < map_pages.length; i++) {
     const obj: any = map_pages[i];
-    const page = (await import(obj._page)).default;
+    const page = (await import(base_url + obj._page)).default;
     pages.push({
       path: obj.path,
       page,

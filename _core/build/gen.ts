@@ -82,7 +82,6 @@ export const map_pages = [
       }).join("\n  ")
     }
 ];
-export const base_url: string = import.meta.url;
 export const tt: string = '${Date.now()}';
 export const env: string = '${env}';
 `;
@@ -97,12 +96,11 @@ export const map_pages = [
         return `{ 
     path: '${path}',
     page: '.${pathfile}',
-    _page: './public/pages${pathfile}'
+    _page: '/public/pages${pathfile}'
   },`;
       }).join("\n  ")
     }
 ];
-export const base_url: string = import.meta.url;
 export const tt: string = '${Date.now()}';
 export const env: string = '${env}';
 `;
