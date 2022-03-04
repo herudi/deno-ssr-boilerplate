@@ -35,7 +35,6 @@ window.addEventListener("load", () => {
               getBaseUrl: () => location.origin,
             }))
             : {});
-        first = false;
         ctx.render(
           <RootApp
             Page={Page}
@@ -57,6 +56,7 @@ window.addEventListener("load", () => {
           RootApp.event.onError(err, ctx);
         }
       }
+      first = false;
     });
   }
   router.resolve();
