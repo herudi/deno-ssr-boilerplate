@@ -14,15 +14,15 @@ window.addEventListener("load", () => {
   for (let i = 0; i < pages.length; i++) {
     const obj: any = pages[i];
     router.add(obj.path, async (ctx) => {
-      const Page: any = env === "development"
-        ? obj.page
-        : (await lazy(obj.page));
-      const init = (window as any).__INIT_DATA__;
-      let initData = {};
       try {
+        const init = (window as any).__INIT_DATA__;
         if (!init && RootApp.event.onStart !== void 0) {
           RootApp.event.onStart(ctx);
         }
+        const Page: any = env === "development"
+          ? obj.page
+          : (await lazy(obj.page));
+        let initData = {};
         initData = init || (Page.initProps
           ? (await Page.initProps({
             isServer: false,
