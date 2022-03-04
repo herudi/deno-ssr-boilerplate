@@ -8,6 +8,7 @@ import { refresh } from "https://deno.land/x/refresh@1.0.0/mod.ts";
 import RootApp from "./tsx/root_app.tsx";
 import { genPages } from "./build/gen.ts";
 import { map_pages } from "./result/pages.ts";
+import { map_pages as map_server_pages } from "./result/server_pages.ts";
 import apis from "./result/apis.ts";
 import Error404 from "../src/components/error/404.tsx";
 import ErrorPage from "../src/components/error/error.tsx";
@@ -57,15 +58,7 @@ if (env === "development") {
     return next();
   });
 } else {
-  const base_url = import.meta.url.replace("/deploy.js", "");
-  for (let i = 0; i < map_pages.length; i++) {
-    const obj: any = map_pages[i];
-    const page = (await import(base_url + obj._page)).default;
-    pages.push({
-      path: obj.path,
-      page,
-    });
-  }
+  pages = map_server_pages;
 }
 
 app.use("/assets", staticFiles("public"));

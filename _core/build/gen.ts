@@ -95,8 +95,7 @@ export const map_pages = [
         const pathfile = el.replace(".tsx", ".js").replace(".jsx", ".js");
         return `{ 
     path: '${path}',
-    page: '.${pathfile}',
-    _page: '/public/pages${pathfile}'
+    page: '.${pathfile}'
   },`;
       }).join("\n  ")
     }
@@ -175,6 +174,11 @@ export async function genPages(
       const str_file = genRoutes(page_list, "page", env);
       const path = dir + "/_core/result/pages.ts";
       await Deno.writeTextFile(path, str_file);
+      if (env === "production") {
+        const str_file = genRoutes(page_list, "page", "development");
+        const path = dir + "/_core/result/server_pages.ts";
+        await Deno.writeTextFile(path, str_file);
+      }
     }
 
     // save apis.ts
