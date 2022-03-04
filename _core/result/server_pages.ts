@@ -21,5 +21,5 @@ export const map_pages = [
     page: $3
   },
 ];
-export const tt: string = '1646383700337';
+export const tt: string = '1646397926223';
 export const env: string = 'development';
