@@ -17,7 +17,7 @@ class Home extends Component<PageProps> {
     return (
       <div>
         <Helmet>
-          <title>Hello Home</title>
+          <title>Hello Home Page</title>
         </Helmet>
         <div class={tw`bg-white flex justify-center h-screen`}>
           <div>

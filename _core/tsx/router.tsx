@@ -1,7 +1,7 @@
 /** @jsx h */
 
 import { h, hydrate } from "nano-jsx";
-import Error404 from "../src/components/error/404.tsx";
+import Error404 from "../../src/components/error/404.tsx";
 
 type TContext = {
   pathname: string;

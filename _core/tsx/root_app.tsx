@@ -1,7 +1,7 @@
 /** @jsx h */
 
 import { h } from "nano-jsx";
-import App from "../src/pages/_app.tsx";
+import App from "../../src/pages/_app.tsx";
 
 function RootApp({ Page, initData, route, isServer }: any) {
   return (

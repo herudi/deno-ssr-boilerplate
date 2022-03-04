@@ -2,7 +2,6 @@
 import { h, Helmet, Router } from "nano-jsx";
 import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
-import NProgress from "https://esm.sh/nprogress?no-check";
 
 const { Link } = Router;
 

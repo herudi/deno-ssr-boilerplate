@@ -1,28 +1,23 @@
 /** @jsx h */
-
 import { h } from "nano-jsx";
 import { ssr } from "./deps/nano_ssr.ts";
 import { NHttp } from "nhttp";
 import { RequestEvent } from "./deps/types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import { refresh } from "https://deno.land/x/refresh@1.0.0/mod.ts";
-import RootApp from "./root_app.tsx";
-import { genPages } from "./gen.ts";
-import pages from "./pages.ts";
-import apis from "./apis.ts";
+import RootApp from "./tsx/root_app.tsx";
+import { genPages } from "./build/gen.ts";
+import { map_pages } from "./result/pages.ts";
+import apis from "./result/apis.ts";
 import Error404 from "../src/components/error/404.tsx";
 import ErrorPage from "../src/components/error/error.tsx";
 
-import * as esbuild from "https://deno.land/x/esbuild@v0.14.22/mod.js";
-import * as esbuild_import_map from "https://esm.sh/esbuild-plugin-import-map?no-check";
-
-import map from "./../import_map.json" assert { type: "json" };
-
-const clientScript = "/assets/hydrates/app.js";
+const clientScript = "/assets/pages/_app.js";
 const tt = Date.now();
 
 const env = (Deno.args || []).includes("--dev") ? "development" : "production";
 let emit: any;
+let pages: any = [];
 
 const app = new NHttp<
   RequestEvent & {
@@ -34,22 +29,25 @@ const app = new NHttp<
 >({ env });
 
 if (env === "development") {
+  pages = map_pages;
+  try {
+    await Deno.remove(Deno.cwd() + "/public/pages", { recursive: true });
+  } catch (_e) { /* noop */ }
   await genPages();
-  map.imports["nano-jsx"] = map.imports["nano-jsx-client"];
-  esbuild_import_map.load(map as any);
-  await esbuild.build({
-    jsxFactory: "h",
-    jsxFragment: "Fragment",
-    bundle: true,
-    format: "esm",
-    loader: {
-      ".ts": "ts",
-      ".tsx": "tsx",
+  const emitOptios: Deno.EmitOptions = {
+    check: false,
+    bundle: "module",
+    compilerOptions: {
+      lib: ["dom", "dom.iterable", "esnext"],
+      jsxFactory: "h",
+      jsxFragmentFactory: "Fragment",
     },
-    entryPoints: ["./_core/hydrate.tsx"],
-    outfile: "./public/hydrates/app.js",
-    plugins: [esbuild_import_map.plugin()],
-  });
+    importMapPath: "./import_map.json",
+  };
+  emit = await Deno.emit(
+    `./_core/tsx/hydrate.tsx`,
+    emitOptios,
+  );
   const midd = refresh({
     paths: "./src/pages/",
   });
@@ -58,7 +56,17 @@ if (env === "development") {
     if (res) return res;
     return next();
   });
+} else {
+  for (let i = 0; i < map_pages.length; i++) {
+    const obj: any = map_pages[i];
+    const page = (await import(obj._page)).default;
+    pages.push({
+      path: obj.path,
+      page,
+    });
+  }
 }
+
 app.use("/assets", staticFiles("public"));
 
 app.use((rev, next) => {
@@ -107,6 +115,13 @@ if (emit) {
 }
 
 app.use("/api", apis.api as any);
+
+if (emit) {
+  app.get("/assets/hydrates/app.js", ({ response }) => {
+    response.type("application/javascript");
+    return emit.files["deno:///bundle.js"];
+  });
+}
 
 app.on404((rev) => {
   if (rev.path.startsWith("/api/")) {

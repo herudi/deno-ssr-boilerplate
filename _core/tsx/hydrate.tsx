@@ -1,15 +1,22 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import pages from "./pages.ts";
+import { env, map_pages as pages, tt } from "./../result/pages.ts";
 import RootApp from "./root_app.tsx";
 import ClassicRouter from "./router.tsx";
+
+async function lazy(url: string) {
+  const mod = (await import(url + "?v=" + tt)).default;
+  return mod;
+}
 
 window.addEventListener("load", () => {
   const router = new ClassicRouter();
   for (let i = 0; i < pages.length; i++) {
-    const obj = pages[i];
+    const obj: any = pages[i];
     router.add(obj.path, async (ctx) => {
-      const Page = obj.page as any;
+      const Page: any = env === "development"
+        ? obj.page
+        : (await lazy(obj.page));
       const init = (window as any).__INIT_DATA__;
       let initData = {};
       try {
@@ -31,7 +38,7 @@ window.addEventListener("load", () => {
         }
         ctx.render(
           <RootApp
-            Page={obj.page}
+            Page={Page}
             initData={initData}
             route={{
               pathname: ctx.pathname,

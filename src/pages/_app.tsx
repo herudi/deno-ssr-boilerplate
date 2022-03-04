@@ -35,9 +35,8 @@ App.onEnd = () => {
 };
 
 App.onError = (err: Error) => {
-  alert(err.message || "Something went wrong");
+  console.error(err);
 };
 
 // onStart, onEnd and onError run on client side only
-
 export default App;

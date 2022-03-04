@@ -1,7 +1,30 @@
-import { join, resolve, toFileUrl, walk } from "./deps/dev.ts";
+import { join, resolve, toFileUrl, walk } from "./../deps/dev.ts";
 
 export const STORAGE_KEY_PAGE = "95d6aa06f620";
 export const STORAGE_KEY_API = "01a2929d18cf";
+
+export async function getListPages() {
+  const dir = Deno.cwd();
+  const page_list = [];
+  const pages_dir = join(dir, "./src/pages");
+  const url = toFileUrl(pages_dir);
+  const it = walk(pages_dir, {
+    includeDirs: false,
+    includeFiles: true,
+    exts: ["tsx", "jsx", "ts", "js"],
+  });
+  for await (const entry of it) {
+    if (entry.isFile) {
+      const file = toFileUrl(entry.path).href.substring(url.href.length);
+      if (!file.startsWith("/_app.")) {
+        if (!file.startsWith("/api/")) {
+          page_list.push("./src/pages" + file);
+        }
+      }
+    }
+  }
+  return page_list;
+}
 
 async function checkStat(arr: string[], dir: string, storage: any) {
   const base = dir + "/src/pages";
@@ -44,11 +67,11 @@ function genPath(el: string) {
   return path;
 }
 
-function genRoutes(arr: string[], target: string) {
-  if (target === "page") {
+function genRoutes(arr: string[], target: string, env: string) {
+  if (target === "page" && env === "development") {
     return `
-${arr.map((el, i) => `import $${i} from "../src/pages${el}";`).join("\n")}
-export default [
+${arr.map((el, i) => `import $${i} from "../../src/pages${el}";`).join("\n")}
+export const map_pages = [
   ${
       arr.map((el, i) => {
         const path = genPath(el);
@@ -59,12 +82,35 @@ export default [
       }).join("\n  ")
     }
 ];
+export const base_url: string = import.meta.url;
+export const tt: string = '${Date.now()}';
+export const env: string = '${env}';
+`;
+  }
+  if (target === "page" && env === "production") {
+    return `
+export const map_pages = [
+  ${
+      arr.map((el) => {
+        const path = genPath(el);
+        const pathfile = el.replace(".tsx", ".js").replace(".jsx", ".js");
+        return `{ 
+    path: '${path}',
+    page: '.${pathfile}',
+    _page: './public/pages${pathfile}'
+  },`;
+      }).join("\n  ")
+    }
+];
+export const base_url: string = import.meta.url;
+export const tt: string = '${Date.now()}';
+export const env: string = '${env}';
 `;
   }
   return `
 import { Router, Handler } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
-import { RequestEvent } from "./deps/types.ts";
-${arr.map((el, i) => `import $${i} from "../src/pages${el}";`).join("\n")}
+import { RequestEvent } from "./../deps/types.ts";
+${arr.map((el, i) => `import $${i} from "../../src/pages${el}";`).join("\n")}
 const api = new Router<RequestEvent>();
 const map = {} as Record<string, Handler<RequestEvent>>;
   ${
@@ -79,7 +125,11 @@ export default { api, map };
 `;
 }
 
-export async function genPages(refresh = false, dir: string = Deno.cwd()) {
+export async function genPages(
+  refresh = false,
+  env = "development",
+  dir: string = Deno.cwd(),
+) {
   try {
     dir = resolve(dir);
     const curr_stat_page = JSON.parse(
@@ -124,15 +174,15 @@ export async function genPages(refresh = false, dir: string = Deno.cwd()) {
 
     // save pages.ts
     if (stat_page.status || refresh) {
-      const str_file = genRoutes(page_list, "page");
-      const path = dir + "/_core/pages.ts";
+      const str_file = genRoutes(page_list, "page", env);
+      const path = dir + "/_core/result/pages.ts";
       await Deno.writeTextFile(path, str_file);
     }
 
     // save apis.ts
     if (stat_api.status || refresh) {
-      const str_file = genRoutes(api_list, "api");
-      const path = dir + "/_core/apis.ts";
+      const str_file = genRoutes(api_list, "api", env);
+      const path = dir + "/_core/result/apis.ts";
       await Deno.writeTextFile(path, str_file);
     }
   } catch (error) {
@@ -141,7 +191,7 @@ export async function genPages(refresh = false, dir: string = Deno.cwd()) {
   }
 }
 
-export async function genRoutesWithRefresh() {
+export async function genRoutesWithRefresh(env: string) {
   localStorage.clear();
-  return await genPages(true);
+  return await genPages(true, env);
 }
