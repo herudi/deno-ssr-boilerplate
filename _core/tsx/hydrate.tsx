@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { env, map_pages as pages, tt } from "./../result/pages.ts";
+import { map_pages as pages, tt } from "./../result/pages.ts";
 import RootApp from "./root_app.tsx";
 import ClassicRouter from "./router.tsx";
 
@@ -8,34 +8,34 @@ async function lazy(url: string) {
   const mod = (await import(url + "?v=" + tt)).default;
   return mod;
 }
-
+let first = true;
 window.addEventListener("load", () => {
+  let init: any = document.getElementById("__INIT_DATA__");
+  if (init) init = JSON.parse(init.textContent || "{}");
   const router = new ClassicRouter();
   for (let i = 0; i < pages.length; i++) {
     const obj: any = pages[i];
     router.add(obj.path, async (ctx) => {
       try {
-        const init = (window as any).__INIT_DATA__;
-        if (!init && RootApp.event.onStart !== void 0) {
+        if (!first && RootApp.event.onStart !== void 0) {
           RootApp.event.onStart(ctx);
         }
-        const Page: any = env === "development"
-          ? obj.page
-          : (await lazy(obj.page));
-        let initData = {};
-        initData = init || (Page.initProps
-          ? (await Page.initProps({
-            isServer: false,
-            params: ctx.params,
-            pathname: ctx.pathname,
-            path: ctx.pathname,
-            url: ctx.url,
-            getBaseUrl: () => location.origin,
-          }))
-          : {});
-        if ((window as any).__INIT_DATA__) {
-          delete (window as any).__INIT_DATA__;
-        }
+        const Page: any = typeof obj.page === "string"
+          ? (await lazy(obj.page))
+          : obj.page;
+        const initData = first
+          ? init || {}
+          : (Page.initProps
+            ? (await Page.initProps({
+              isServer: false,
+              params: ctx.params,
+              pathname: ctx.pathname,
+              path: ctx.pathname,
+              url: ctx.url,
+              getBaseUrl: () => location.origin,
+            }))
+            : {});
+        first = false;
         ctx.render(
           <RootApp
             Page={Page}
@@ -49,7 +49,7 @@ window.addEventListener("load", () => {
             isServer={false}
           />,
         );
-        if (!init && RootApp.event.onEnd !== void 0) {
+        if (!first && RootApp.event.onEnd !== void 0) {
           RootApp.event.onEnd(ctx);
         }
       } catch (err) {

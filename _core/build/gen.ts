@@ -83,7 +83,6 @@ export const map_pages = [
     }
 ];
 export const tt: string = '${Date.now()}';
-export const env: string = '${env}';
 `;
   }
   if (target === "page" && env === "production") {
@@ -101,7 +100,6 @@ export const map_pages = [
     }
 ];
 export const tt: string = '${Date.now()}';
-export const env: string = '${env}';
 `;
   }
   return `

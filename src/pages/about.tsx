@@ -10,9 +10,12 @@ function About(props: PageProps) {
         <title>{props.title}</title>
       </Helmet>
       <div class={tw`bg-white flex h-screen`}>
-        <h1 class={tw`text-5xl text-green-600 m-auto mt-20`}>
-          {props.title || "loading..."}
-        </h1>
+        <div class={tw`text-center mt-20 mb-10 m-auto text-gray-600`}>
+          <h3 class={tw`text-5xl`}>
+            {props.title}
+          </h3>
+          <p class={tw`text-2xl`}>This about from api/handler.</p>
+        </div>
       </div>
     </div>
   );

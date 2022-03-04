@@ -4,7 +4,7 @@ import { tw } from "twind";
 import { PageProps } from "types";
 
 const style = {
-  button: "text-2xl px-6 py-2 text-sm font-semibold text-blue-800 bg-blue-100",
+  button: "text-2xl px-6 py-2 text-sm font-semibold text-white bg-gray-800",
 };
 
 class Home extends Component<PageProps> {
@@ -21,9 +21,12 @@ class Home extends Component<PageProps> {
         </Helmet>
         <div class={tw`bg-white flex justify-center h-screen`}>
           <div>
-            <h3 class={tw`text-5xl text-center mt-20 mb-20 text-gray-600`}>
-              Counter App
-            </h3>
+            <div class={tw`text-center mt-20 mb-10 text-gray-600`}>
+              <h3 class={tw`text-5xl`}>
+                Welcome Home
+              </h3>
+              <p class={tw`text-2xl`}>Example Counter App</p>
+            </div>
             <div class={tw`text-center`}>
               <button
                 class={tw`${style.button}`}
@@ -32,7 +35,7 @@ class Home extends Component<PageProps> {
                 +
               </button>
               <span
-                class={tw`p-5 text-2xl text-sm font-semibold text-blue-800`}
+                class={tw`p-5 text-2xl text-sm font-bold text-blue-800`}
               >
                 {this.value}
               </span>

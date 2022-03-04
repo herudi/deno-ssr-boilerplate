@@ -45,6 +45,15 @@ export default function Navbar({ route }: any) {
               </div>
             </div>
           </div>
+          <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+            <a
+              class={tw`${in_active}`}
+              href="https://github.com/herudi/deno-ssr-boilerplate"
+              target="__blank"
+            >
+              Github
+            </a>
+          </div>
         </div>
       </div>
     </nav>

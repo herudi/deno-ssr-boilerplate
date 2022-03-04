@@ -22,20 +22,27 @@ function setupSheet(twOptions: Record<string, any>) {
 }
 
 const html = (
-  { body, head, footer, styleTag, clientScript, env, initData, tt }: any,
+  { body, attributes, head, footer, styleTag, clientScript, env, initData, tt }:
+    any,
 ) => (`<!DOCTYPE html>
-<html lang="en">
+<html ${attributes.html.toString()}>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     ${head.join("\n    ")}
     ${styleTag}
   </head>
-  <body>
+  ${
+  attributes.body.size === 0 ? "<body>" : `<body ${attributes.body.toString()}>`
+}
     <div id="root">${body}</div>
-    <script>window.__INIT_DATA__ = ${JSON.stringify(initData)}</script>${
-  footer.join("\n    ")
-}${
+    ${
+  initData !== void 0
+    ? `<script id="__INIT_DATA__" type="application/json">${
+      JSON.stringify(initData)
+    }</script>`
+    : ""
+}${footer.join("\n    ")}${
   env === "development"
     ? '<script src="/assets/js/refresh_client.js"></script>'
     : ""
@@ -47,10 +54,10 @@ const html = (
 export function ssr(Component: any, opts: Record<string, any> = {}) {
   sheet(opts.tw ?? {}).reset();
   const app = renderSSR(Component, opts);
-  const { body, head, footer } = Helmet.SSR(app);
+  const { body, head, footer, attributes } = Helmet.SSR(app);
   const styleTag = getStyleTag(sheet());
   return new Response(
-    html({ ...opts, body, head, footer, styleTag }),
+    html({ ...opts, body, head, footer, styleTag, attributes }),
     { headers: { "content-type": "text/html" }, status: opts.status || 200 },
   );
 }

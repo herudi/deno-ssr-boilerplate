@@ -76,7 +76,7 @@ app.use((rev, next) => {
     return ssr(
       <RootApp
         isServer={true}
-        initData={props.initData || {}}
+        initData={props.initData}
         Page={Page}
         route={{
           url: rev.url,
@@ -85,7 +85,7 @@ app.use((rev, next) => {
           params: rev.params,
         }}
       />,
-      { clientScript, env, initData: props.initData || {}, tt },
+      { clientScript, env, initData: props.initData, tt },
     );
   };
   return next();
@@ -95,7 +95,7 @@ for (let i = 0; i < pages.length; i++) {
   const route: any = pages[i];
   app.get(route.path, async (rev) => {
     const Page = route.page as any;
-    const initData = Page.initProps ? (await Page.initProps(rev)) : {};
+    const initData = Page.initProps ? (await Page.initProps(rev)) : void 0;
     return rev.render(Page, { path: route.path, initData });
   });
 }
