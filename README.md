@@ -5,8 +5,6 @@ for [Deno](https://deno.land) that uses [nanojsx](https://nanojsx.io/).
 
 Demo => https://deno-ssr-boilerplate.deno.dev
 
-> Under development. not ready for production.
-
 ## Features
 
 - Support for [Deno Deploy](https://deno.com/deploy) and
@@ -14,7 +12,6 @@ Demo => https://deno-ssr-boilerplate.deno.dev
 - Dynamic routes page and api/handler.
 - Tailwind out of the box.
 - Hot Reloading.
-- Pre-render.
 
 ## Includes
 

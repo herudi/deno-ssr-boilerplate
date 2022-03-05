@@ -15,10 +15,11 @@ window.addEventListener("load", () => {
   const router = new ClassicRouter();
   for (let i = 0; i < pages.length; i++) {
     const obj: any = pages[i];
-    router.add(obj.path, async (ctx) => {
+    router.add(obj.path, async (rev) => {
+      rev.isFirst = first;
       try {
-        if (!first && RootApp.event.onStart !== void 0) {
-          await RootApp.event.onStart(ctx);
+        if (RootApp.event.onStart !== void 0) {
+          await RootApp.event.onStart(rev);
         }
         const Page: any = typeof obj.page === "string"
           ? (await lazy(obj.page))
@@ -28,32 +29,32 @@ window.addEventListener("load", () => {
           : (Page.initProps
             ? (await Page.initProps({
               isServer: false,
-              params: ctx.params,
-              pathname: ctx.pathname,
-              path: ctx.pathname,
-              url: ctx.url,
+              params: rev.params,
+              pathname: rev.pathname,
+              path: rev.pathname,
+              url: rev.url,
               getBaseUrl: () => location.origin,
             }))
             : {});
-        ctx.render(
+        rev.hydrate(
           <RootApp
             Page={Page}
             initData={initData}
             route={{
-              pathname: ctx.pathname,
-              url: ctx.url,
+              pathname: rev.pathname,
+              url: rev.url,
               path: obj.path,
-              params: ctx.params,
+              params: rev.params,
             }}
             isServer={false}
           />,
         );
-        if (!first && RootApp.event.onEnd !== void 0) {
-          RootApp.event.onEnd(ctx);
+        if (RootApp.event.onEnd !== void 0) {
+          RootApp.event.onEnd(rev);
         }
       } catch (err) {
         if (RootApp.event.onError !== void 0) {
-          RootApp.event.onError(err, ctx);
+          RootApp.event.onError(err, rev);
         }
       }
       first = false;

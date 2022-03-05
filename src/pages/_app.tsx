@@ -1,8 +1,7 @@
 /** @jsx h */
 import { h, Helmet } from "nano-jsx";
-import { AppProps } from "types";
+import { AppProps, RequestEvent } from "types";
 import Navbar from "../components/navbar.tsx";
-import NProgress from "https://esm.sh/nprogress?no-check";
 
 function App({ Component, props }: AppProps) {
   return (
@@ -24,13 +23,16 @@ function App({ Component, props }: AppProps) {
 // example load NProgress showing if timeout > 300ms
 let timeout: any;
 
-App.onStart = () => {
+App.onStart = async (rev: RequestEvent) => {
+  // example dynamic import. cause for client side only.
+  const NProgress = (await import("https://esm.sh/nprogress?no-check")).default;
+  rev.NProgress = NProgress;
   timeout = setTimeout(() => {
     NProgress.start();
   }, 300);
 };
 
-App.onEnd = () => {
+App.onEnd = ({ NProgress }: RequestEvent) => {
   if (timeout) clearTimeout(timeout);
   NProgress.done();
 };
