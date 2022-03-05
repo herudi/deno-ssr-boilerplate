@@ -27,9 +27,13 @@ App.onStart = async (rev: RequestEvent) => {
   // example dynamic import. cause for client side only.
   const NProgress = (await import("https://esm.sh/nprogress?no-check")).default;
   rev.NProgress = NProgress;
-  timeout = setTimeout(() => {
-    NProgress.start();
-  }, 300);
+
+  // don't use NProgress in first load.
+  if (!rev.isFirst) {
+    timeout = setTimeout(() => {
+      NProgress.start();
+    }, 300);
+  }
 };
 
 App.onEnd = ({ NProgress }: RequestEvent) => {
