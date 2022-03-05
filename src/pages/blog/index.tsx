@@ -8,7 +8,7 @@ const { Link } = Router;
 function Blog({ data }: PageProps) {
   return (
     <div>
-      <Helmet head>
+      <Helmet>
         <title>Hello Blog Page</title>
       </Helmet>
       <div class={tw`bg-white min-h-screen`}>

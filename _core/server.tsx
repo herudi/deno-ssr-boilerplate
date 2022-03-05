@@ -4,10 +4,7 @@ import { ssr } from "./deps/nano_ssr.ts";
 import { NHttp } from "nhttp";
 import { RequestEvent } from "./deps/types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
-import { refresh } from "https://deno.land/x/refresh@1.0.0/mod.ts";
 import RootApp from "./tsx/root_app.tsx";
-import { genPages } from "./build/gen.ts";
-import { map_pages } from "./result/pages.ts";
 import { map_pages as map_server_pages } from "./result/server_pages.ts";
 import apis from "./result/apis.ts";
 import Error404 from "../src/components/error/404.tsx";
@@ -30,6 +27,9 @@ const app = new NHttp<
 >({ env });
 
 if (env === "development") {
+  const { genPages } = await import("./build/gen.ts");
+  const { map_pages } = await import("./result/pages.ts");
+  const { refresh } = await import("https://deno.land/x/refresh@1.0.0/mod.ts");
   pages = map_pages;
   try {
     await Deno.remove(Deno.cwd() + "/public/pages", { recursive: true });

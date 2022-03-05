@@ -7,7 +7,7 @@ import NProgress from "https://esm.sh/nprogress?no-check";
 function App({ Component, props }: AppProps) {
   return (
     <div>
-      <Helmet head>
+      <Helmet>
         <html lang="en" />
         <link rel="icon" href="data:," />
         <link
