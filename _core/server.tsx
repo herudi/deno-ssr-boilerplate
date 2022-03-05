@@ -51,6 +51,7 @@ if (env === "development") {
   );
   const midd = refresh({
     paths: "./src/pages/",
+    debounce: 300,
   });
   app.use((rev, next) => {
     const res = midd(rev.request);
