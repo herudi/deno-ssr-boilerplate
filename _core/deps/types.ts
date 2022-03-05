@@ -4,6 +4,7 @@ export type RequestEvent = BRequestEvent & {
   getBaseUrl: () => string;
   pathname: string;
   isServer: boolean;
+  isFirst: boolean;
   handler: (targetFile: string) => Promise<any>;
 };
 

@@ -29,6 +29,7 @@ window.addEventListener("load", () => {
           : (Page.initProps
             ? (await Page.initProps({
               isServer: false,
+              isFirst: rev.isFirst,
               params: rev.params,
               pathname: rev.pathname,
               path: rev.pathname,
