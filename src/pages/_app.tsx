@@ -6,11 +6,13 @@ import Navbar from "../components/navbar.tsx";
 function App({ Component, props }: AppProps) {
   return (
     <div>
-      <Helmet>
+      <Helmet head>
         <html lang="en" />
         <link rel="icon" href="data:," />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js">
+        </script>
         <link
-          href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.css"
+          href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css"
           rel="stylesheet"
         />
       </Helmet>
@@ -23,15 +25,13 @@ function App({ Component, props }: AppProps) {
 // example load NProgress showing if timeout > 300ms
 let timeout: any;
 
-App.onStart = async (rev: RequestEvent) => {
-  // example dynamic import. cause for client side only.
-  const NProgress = (await import("https://esm.sh/nprogress?no-check")).default;
-  rev.NProgress = NProgress;
+App.onStart = (rev: RequestEvent) => {
+  rev.NProgress = (window as any).NProgress;
 
-  // don't use NProgress in first load.
+  // example use NProgress after first load.
   if (!rev.isFirst) {
     timeout = setTimeout(() => {
-      NProgress.start();
+      rev.NProgress.start();
     }, 300);
   }
 };

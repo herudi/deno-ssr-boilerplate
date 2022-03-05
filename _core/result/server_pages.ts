@@ -21,4 +21,4 @@ export const map_pages = [
     page: $3
   },
 ];
-export const tt: string = '1646487034201';
+export const tt: string = '1646488163358';
