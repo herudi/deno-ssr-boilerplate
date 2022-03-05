@@ -18,7 +18,7 @@ window.addEventListener("load", () => {
     router.add(obj.path, async (ctx) => {
       try {
         if (!first && RootApp.event.onStart !== void 0) {
-          RootApp.event.onStart(ctx);
+          await RootApp.event.onStart(ctx);
         }
         const Page: any = typeof obj.page === "string"
           ? (await lazy(obj.page))

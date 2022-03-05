@@ -13,6 +13,8 @@ Demo => https://deno-ssr-boilerplate.deno.dev
   [Deno](https://deno.land).
 - Dynamic routes page and api/handler.
 - Tailwind out of the box.
+- Hot Reloading.
+- Pre-render.
 
 ## Includes
 
