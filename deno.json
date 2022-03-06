@@ -3,6 +3,7 @@
     "lib": [
       "dom",
       "dom.asynciterable",
+      "dom.iterable",
       "deno.ns",
       "deno.unstable"
     ],

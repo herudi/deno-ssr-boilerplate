@@ -59,7 +59,7 @@ try {
     outfile: "./public/pages/_app.js",
   });
   console.log("Success Build !!");
-  console.log("Run Production: deno run -A --no-check deploy.js");
+  console.log("Run Production: deno run -A deploy.js");
   esbuild.stop();
 } catch (error) {
   console.log(error.message);

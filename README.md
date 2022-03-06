@@ -31,7 +31,7 @@ cd deno-ssr-boilerplate
 ### Run Development
 
 ```bash
-deno run -A --no-check script.ts --dev
+deno run -A script.ts --dev
 ```
 
 Open => http://localhost:8080/
@@ -39,16 +39,17 @@ Open => http://localhost:8080/
 ### Build Production
 
 ```bash
-deno run -A --no-check script.ts --build
+deno run -A script.ts --build
 ```
+
+Will generate deploy.js and ready to deploy to
+[Deno Deploy](https://deno.com/deploy)
 
 ### Run Production
 
 ```bash
-deno run -A --no-check deploy.js
+deno run -A deploy.js
 ```
-
-Generate deploy.js and ready to deploy to [Deno Deploy](https://deno.com/deploy)
 
 ### Example Code
 
@@ -79,6 +80,7 @@ function About(props: PageProps) {
 About.initProps = async (rev: RequestEvent) => {
   if (rev.isServer) {
     // don't fetch self server :). use handler instead.
+    // of course, normal fetch it's ok fine. but not recomended if hole api. :(
     return await rev.handler("/api/about.ts");
   }
   // normal fetch if client-side

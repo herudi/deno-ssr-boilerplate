@@ -17,4 +17,4 @@ export const map_pages = [
     page: './index.js'
   },
 ];
-export const tt: string = '1646517507041';
+export const tt: string = '1646536926398';

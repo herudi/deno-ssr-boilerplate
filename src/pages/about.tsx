@@ -5,7 +5,7 @@ import { PageProps, RequestEvent } from "types";
 
 function About(props: PageProps) {
   return (
-    <div id="about">
+    <div>
       <Helmet>
         <title>{props.title}</title>
       </Helmet>

@@ -17,14 +17,7 @@ const env = (Deno.args || []).includes("--dev") ? "development" : "production";
 let emit: any;
 let pages: any = [];
 
-const app = new NHttp<
-  RequestEvent & {
-    render: (
-      Page: any,
-      props: { path: string; initData?: any },
-    ) => Record<string, any>;
-  }
->({ env });
+const app = new NHttp<RequestEvent>({ env });
 
 if (env === "development") {
   const { genPages } = await import("./build/gen.ts");
@@ -51,7 +44,6 @@ if (env === "development") {
   );
   const midd = refresh({
     paths: "./src/pages/",
-    debounce: 300,
   });
   app.use((rev, next) => {
     const res = midd(rev.request);
@@ -73,22 +65,6 @@ app.use((rev, next) => {
     if (!name.startsWith("/")) name = "/" + name;
     return await apis.map[name](rev, next);
   };
-  rev.render = (Page, props) => {
-    return ssr(
-      <RootApp
-        isServer={true}
-        initData={props.initData}
-        Page={Page}
-        route={{
-          url: rev.url,
-          pathname: rev.path,
-          path: props.path,
-          params: rev.params,
-        }}
-      />,
-      { clientScript, env, initData: props.initData, tt },
-    );
-  };
   return next();
 });
 
@@ -97,7 +73,20 @@ for (let i = 0; i < pages.length; i++) {
   app.get(route.path, async (rev) => {
     const Page = route.page as any;
     const initData = Page.initProps ? (await Page.initProps(rev)) : void 0;
-    return rev.render(Page, { path: route.path, initData });
+    return ssr(
+      <RootApp
+        isServer={true}
+        initData={initData}
+        Page={Page}
+        route={{
+          url: rev.url,
+          pathname: rev.path,
+          path: route.path,
+          params: rev.params,
+        }}
+      />,
+      { clientScript, env, initData, tt },
+    );
   });
 }
 
@@ -131,4 +120,4 @@ app.onError((err, rev) => {
   );
 });
 
-export const http = app;
+export default app;
