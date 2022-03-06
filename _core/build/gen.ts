@@ -62,6 +62,9 @@ function genPath(el: string) {
     if (val.startsWith("[") && val.endsWith("]")) {
       return curr + "/:" + val.slice(1, val.length - 1);
     }
+    if (!curr.startsWith("api") && curr !== "") {
+      return curr + "/" + val;
+    }
     return val;
   }, "");
   return path;

@@ -46,7 +46,11 @@ const html = (
   env === "development"
     ? '<script src="/assets/js/refresh_client.js"></script>'
     : ""
-}<script type="module" src="${clientScript + "?v=" + tt}"></script>
+}${
+  clientScript
+    ? `<script type="module" src="${clientScript + "?v=" + tt}"></script>`
+    : ""
+}
   </body>
 <html>
 `);
