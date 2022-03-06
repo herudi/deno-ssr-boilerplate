@@ -16,8 +16,14 @@ const tt = Date.now();
 const env = (Deno.args || []).includes("--dev") ? "development" : "production";
 let emit: any;
 let pages: any = [];
+type ReqEvent = RequestEvent & {
+  render: (
+    Page: any,
+    props: { path: string; initData?: any },
+  ) => Record<string, any>;
+};
 
-const app = new NHttp<RequestEvent>({ env });
+const app = new NHttp<ReqEvent>({ env });
 
 if (env === "development") {
   const { genPages } = await import("./build/gen.ts");
@@ -65,30 +71,24 @@ app.use((rev, next) => {
     if (!name.startsWith("/")) name = "/" + name;
     return await apis.map[name](rev, next);
   };
-  return next();
-});
-
-for (let i = 0; i < pages.length; i++) {
-  const route: any = pages[i];
-  app.get(route.path, async (rev) => {
-    const Page = route.page as any;
-    const initData = Page.initProps ? (await Page.initProps(rev)) : void 0;
+  rev.render = (Page, props) => {
     return ssr(
       <RootApp
         isServer={true}
-        initData={initData}
+        initData={props.initData}
         Page={Page}
         route={{
           url: rev.url,
           pathname: rev.path,
-          path: route.path,
+          path: props.path,
           params: rev.params,
         }}
       />,
-      { clientScript, env, initData, tt },
+      { clientScript, env, initData: props.initData, tt },
     );
-  });
-}
+  };
+  return next();
+});
 
 if (emit) {
   app.get(clientScript, ({ response }) => {
@@ -120,4 +120,21 @@ app.onError((err, rev) => {
   );
 });
 
-export default app;
+export const initApp = (routeCallback?: (app: NHttp<ReqEvent>) => any) => {
+  let obj = {} as any;
+  if (routeCallback) {
+    routeCallback(app);
+    obj = app.route;
+  }
+  for (let i = 0; i < pages.length; i++) {
+    const route: any = pages[i];
+    if (!obj["GET" + route.path]) {
+      app.get(route.path, async (rev) => {
+        const Page = route.page as any;
+        const initData = Page.initProps ? (await Page.initProps(rev)) : void 0;
+        return rev.render(Page, { path: route.path, initData });
+      });
+    }
+  }
+  return app;
+};
