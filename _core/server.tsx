@@ -1,7 +1,7 @@
 /** @jsx h */
 import { h } from "nano-jsx";
 import { ssr } from "./deps/nano_ssr.ts";
-import { NHttp } from "nhttp";
+import { Handler, HttpError, NHttp } from "nhttp";
 import { RequestEvent } from "./deps/types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import RootApp from "./tsx/root_app.tsx";
@@ -29,25 +29,37 @@ if (env === "development") {
   const { genPages } = await import("./build/gen.ts");
   const { map_pages } = await import("./result/pages.ts");
   const { refresh } = await import("https://deno.land/x/refresh@1.0.0/mod.ts");
+  const esbuild = await import("https://deno.land/x/esbuild@v0.14.22/mod.js");
+  const es_map = await import(
+    "https://esm.sh/esbuild-plugin-import-map?no-check"
+  );
+  const map =
+    (await import("./../import_map.json", { assert: { type: "json" } }))
+      .default;
+  map.imports["nano-jsx"] = map.imports["nano-jsx-client"];
   pages = map_pages;
   try {
     await Deno.remove(Deno.cwd() + "/public/pages", { recursive: true });
   } catch (_e) { /* noop */ }
+  try {
+    await Deno.mkdir(Deno.cwd() + "/public/pages");
+  } catch (_e) { /* noop */ }
   await genPages();
-  const emitOptios: Deno.EmitOptions = {
-    check: false,
-    bundle: "module",
-    compilerOptions: {
-      lib: ["dom", "dom.iterable", "esnext"],
-      jsxFactory: "h",
-      jsxFragmentFactory: "Fragment",
+  es_map.load(map as any);
+  await esbuild.build({
+    jsxFactory: "h",
+    jsxFragment: "Fragment",
+    format: "esm",
+    loader: {
+      ".ts": "ts",
+      ".js": "js",
+      ".tsx": "tsx",
     },
-    importMapPath: "./import_map.json",
-  };
-  emit = await Deno.emit(
-    `./_core/tsx/hydrate.tsx`,
-    emitOptios,
-  );
+    bundle: true,
+    plugins: [es_map.plugin()],
+    entryPoints: ["./_core/tsx/hydrate.tsx"],
+    outfile: "./public/pages/_app.js",
+  });
   const midd = refresh({
     paths: "./src/pages/",
   });
@@ -69,9 +81,26 @@ app.use((rev, next) => {
   rev.pathname = rev.path;
   rev.handler = async (name) => {
     if (!name.startsWith("/")) name = "/" + name;
-    return await apis.map[name](rev, next);
+    const fns = apis.map[name];
+    if (Array.isArray(fns)) {
+      let i = 0;
+      const ret = (err?: Error) => {
+        if (err) {
+          if (err instanceof Error) throw err;
+          else throw new HttpError(500, String(err));
+        }
+        return (fns as unknown as Handler<RequestEvent>[])[i++](rev, ret);
+      };
+      return await ret();
+    }
+    return await (apis.map[name] as Handler<RequestEvent>)(rev, next);
   };
-  rev.render = (Page, props) => {
+  rev.render = async (Page, props) => {
+    const rootData = RootApp.initProps ? (await RootApp.initProps(rev)) : {};
+    if (rootData) {
+      const data = props.initData || {};
+      props.initData = { ...data, ...rootData };
+    }
     return ssr(
       <RootApp
         isServer={true}
@@ -89,13 +118,6 @@ app.use((rev, next) => {
   };
   return next();
 });
-
-if (emit) {
-  app.get(clientScript, ({ response }) => {
-    response.type("application/javascript");
-    return emit.files["deno:///bundle.js"];
-  });
-}
 
 app.use("/api", apis.api as any);
 
@@ -128,12 +150,18 @@ export const initApp = (routeCallback?: (app: NHttp<ReqEvent>) => any) => {
   }
   for (let i = 0; i < pages.length; i++) {
     const route: any = pages[i];
-    if (!obj["GET" + route.path]) {
-      app.get(route.path, async (rev) => {
-        const Page = route.page as any;
-        const initData = Page.initProps ? (await Page.initProps(rev)) : void 0;
-        return rev.render(Page, { path: route.path, initData });
-      });
+    const methods = route.methods || ["GET"];
+    for (let j = 0; j < methods.length; j++) {
+      const method = methods[j];
+      if (!obj[method + route.path]) {
+        app.on(method, route.path, async (rev) => {
+          const Page = route.page as any;
+          const initData = Page.initProps
+            ? (await Page.initProps(rev))
+            : void 0;
+          return rev.render(Page, { path: route.path, initData });
+        });
+      }
     }
   }
   return app;

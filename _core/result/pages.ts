@@ -16,5 +16,9 @@ export const map_pages = [
     path: '/',
     page: './index.js'
   },
+  { 
+    path: '/sign',
+    page: './sign.js'
+  },
 ];
-export const tt: string = '1646547897889';
+export const tt: string = '1646619995542';

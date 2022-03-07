@@ -12,10 +12,7 @@ function RootApp({ Page, initData, route, isServer }: any) {
   );
 }
 
-RootApp.event = {
-  onStart: (App as any).onStart,
-  onEnd: (App as any).onEnd,
-  onError: (App as any).onError,
-};
+RootApp.initProps = (App as any).initProps;
+RootApp.event = (App as any).event || {};
 
 export default RootApp;

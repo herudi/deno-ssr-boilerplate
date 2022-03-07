@@ -4,10 +4,12 @@ import { h, hydrate } from "nano-jsx";
 import Error404 from "../../src/components/error/404.tsx";
 import { RequestEvent } from "../deps/types.ts";
 
+type ReqEvent = RequestEvent & {
+  render: (elem: any, id?: string) => any;
+};
+
 type THandler = (
-  rev: RequestEvent & {
-    hydrate: (elem: any, id?: string) => any;
-  },
+  rev: ReqEvent,
 ) => any;
 
 function wildcard(path: string, wild: boolean, match: any) {
@@ -93,18 +95,17 @@ export default class ClassicRouter {
     let { fn, params } = this.find(pathname);
     this.current = pathname + search;
     const _id = this.id;
-    const rev = {} as RequestEvent;
+    const rev = {} as ReqEvent;
     rev.pathname = pathname;
     rev.url = this.current;
-    rev.search = search;
     rev.path = pathname;
     rev.isServer = false;
     rev.getBaseUrl = () => location.origin;
     rev.params = params;
-    rev.hydrate = (elem: any, id?: string) => {
+    rev.render = (elem, id) => {
       hydrate(elem, document.getElementById(id || _id));
     };
-    if (!fn) return rev.hydrate(<Error404 />);
+    if (!fn) return rev.render(<Error404 />);
     fn(rev);
   }
 

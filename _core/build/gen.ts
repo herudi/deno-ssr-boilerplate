@@ -74,13 +74,14 @@ function genRoutes(arr: string[], target: string, env: string) {
   if (target === "page" && env === "development") {
     return `
 ${arr.map((el, i) => `import $${i} from "../../src/pages${el}";`).join("\n")}
-export const map_pages = [
+export const map_pages: any = [
   ${
       arr.map((el, i) => {
         const path = genPath(el);
         return `{ 
     path: '${path}',
-    page: $${i}
+    page: $${i},
+    methods: ($${i} as any).methods
   },`;
       }).join("\n  ")
     }
@@ -110,7 +111,7 @@ import { Router, Handler } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
 import { RequestEvent } from "./../deps/types.ts";
 ${arr.map((el, i) => `import $${i} from "../../src/pages${el}";`).join("\n")}
 const api = new Router<RequestEvent>();
-const map = {} as Record<string, Handler<RequestEvent>>;
+const map = {} as Record<string, Handler<RequestEvent> | Handler<RequestEvent>[]>;
   ${
     arr.map((el, i) => {
       const path = genPath(el);

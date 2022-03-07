@@ -18,6 +18,10 @@ window.addEventListener("load", () => {
     router.add(obj.path, async (rev) => {
       rev.isFirst = first;
       try {
+        let rootData = {};
+        if (!first) {
+          rootData = RootApp.initProps ? (await RootApp.initProps(rev)) : {};
+        }
         if (RootApp.event.onStart !== void 0) {
           await RootApp.event.onStart(rev);
         }
@@ -26,21 +30,11 @@ window.addEventListener("load", () => {
           : obj.page;
         const initData = first
           ? init || {}
-          : (Page.initProps
-            ? (await Page.initProps({
-              isServer: false,
-              isFirst: rev.isFirst,
-              params: rev.params,
-              pathname: rev.pathname,
-              path: rev.pathname,
-              url: rev.url,
-              getBaseUrl: () => location.origin,
-            }))
-            : {});
-        rev.hydrate(
+          : (Page.initProps ? (await Page.initProps(rev)) : {});
+        rev.render(
           <RootApp
             Page={Page}
-            initData={initData}
+            initData={{ ...initData, ...rootData }}
             route={{
               pathname: rev.pathname,
               url: rev.url,

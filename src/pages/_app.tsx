@@ -16,7 +16,7 @@ function App({ Component, props }: AppProps) {
           rel="stylesheet"
         />
       </Helmet>
-      <Navbar route={props.route} />
+      {props.route.pathname !== "/sign" && <Navbar route={props.route} />}
       <Component {...props} />
     </div>
   );
@@ -25,25 +25,25 @@ function App({ Component, props }: AppProps) {
 // example load NProgress showing if timeout > 300ms
 let timeout: any;
 
-App.onStart = (rev: RequestEvent) => {
-  rev.NProgress = (window as any).NProgress;
+// event run on client side only
+App.event = {
+  onStart(rev: RequestEvent) {
+    rev.NProgress = (window as any).NProgress;
 
-  // example use NProgress after first load.
-  if (!rev.isFirst) {
-    timeout = setTimeout(() => {
-      rev.NProgress.start();
-    }, 300);
-  }
+    // example use NProgress after first load.
+    if (!rev.isFirst) {
+      timeout = setTimeout(() => {
+        rev.NProgress.start();
+      }, 300);
+    }
+  },
+  onEnd({ NProgress }: RequestEvent) {
+    if (timeout) clearTimeout(timeout);
+    NProgress.done();
+  },
+  onError(err: Error) {
+    console.error(err);
+  },
 };
 
-App.onEnd = ({ NProgress }: RequestEvent) => {
-  if (timeout) clearTimeout(timeout);
-  NProgress.done();
-};
-
-App.onError = (err: Error) => {
-  console.error(err);
-};
-
-// onStart, onEnd and onError run on client side only
 export default App;
