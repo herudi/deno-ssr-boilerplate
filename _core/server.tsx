@@ -24,6 +24,9 @@ type ReqEvent = RequestEvent & {
 const app = new NHttp<ReqEvent>({ env });
 
 if (env === "development") {
+  try {
+    await Deno.remove(Deno.cwd() + "/public/pages", { recursive: true });
+  } catch (_e) { /* noop */ }
   const { genPages } = await import("./build/gen.ts");
   const { map_pages } = await import("./result/pages.ts");
   const { refresh } = await import("https://deno.land/x/refresh@1.0.0/mod.ts");
@@ -34,14 +37,11 @@ if (env === "development") {
   const map =
     (await import("./../import_map.json", { assert: { type: "json" } }))
       .default;
-  map.imports["nano-jsx"] = map.imports["nano-jsx-client"];
+  map.imports["nano-jsx"] = "https://cdn.skypack.dev/nano-jsx@v0.0.30";
   pages = map_pages;
-  try {
-    await Deno.mkdir(Deno.cwd() + "/public/pages");
-  } catch (_e) { /* noop */ }
   await genPages();
   es_map.load(map as any);
-  await esbuild.build({
+  const result = await esbuild.build({
     jsxFactory: "h",
     jsxFragment: "Fragment",
     format: "esm",
@@ -50,11 +50,13 @@ if (env === "development") {
       ".js": "js",
       ".tsx": "tsx",
     },
+    write: false,
     bundle: true,
     plugins: [es_map.plugin()],
     entryPoints: ["./_core/tsx/hydrate.tsx"],
     outfile: "./public/pages/_app.js",
   });
+  const source = result.outputFiles[0]?.text || "noop";
   const midd = refresh({
     paths: "./src/pages/",
   });
@@ -62,6 +64,10 @@ if (env === "development") {
     const res = midd(rev.request);
     if (res) return res;
     return next();
+  });
+  app.get(clientScript, ({ response }) => {
+    response.type("application/javascript");
+    return source;
   });
 } else {
   pages = map_server_pages;

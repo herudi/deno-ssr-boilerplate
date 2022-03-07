@@ -1,7 +1,6 @@
 {
   "imports": {
     "nano-jsx": "https://deno.land/x/nano_jsx@v0.0.30/mod.ts",
-    "nano-jsx-client": "https://cdn.skypack.dev/nano-jsx@v0.0.30",
     "twind": "https://cdn.skypack.dev/twind@0.16.16",
     "nhttp": "https://deno.land/x/nhttp@1.1.10/mod.ts",
     "types": "./_core/deps/types.ts"
