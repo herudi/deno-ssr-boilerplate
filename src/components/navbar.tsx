@@ -35,23 +35,15 @@ export default function Navbar({ route }: any) {
                   Blog
                 </Link>
                 <Link
-                  class={tw`${
-                    route.pathname === "/about" ? active : in_active
-                  }`}
-                  to="/about"
+                  class={tw`${route.pathname === "/sign" ? active : in_active}`}
+                  to="/sign"
                 >
-                  About
+                  Sign Form
                 </Link>
               </div>
             </div>
           </div>
           <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <Link
-              class={tw`${route.pathname === "/sign" ? active : in_active}`}
-              to="/sign"
-            >
-              Sign
-            </Link>
             <a
               class={tw`${in_active}`}
               href="https://github.com/herudi/deno-ssr-boilerplate"

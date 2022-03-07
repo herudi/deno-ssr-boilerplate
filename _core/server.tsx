@@ -10,11 +10,9 @@ import apis from "./result/apis.ts";
 import Error404 from "../src/components/error/404.tsx";
 import ErrorPage from "../src/components/error/error.tsx";
 
+const env = (Deno.args || []).includes("--dev") ? "development" : "production";
 const clientScript = "/assets/pages/_app.js";
 const tt = Date.now();
-
-const env = (Deno.args || []).includes("--dev") ? "development" : "production";
-let emit: any;
 let pages: any = [];
 type ReqEvent = RequestEvent & {
   render: (
@@ -38,9 +36,6 @@ if (env === "development") {
       .default;
   map.imports["nano-jsx"] = map.imports["nano-jsx-client"];
   pages = map_pages;
-  try {
-    await Deno.remove(Deno.cwd() + "/public/pages", { recursive: true });
-  } catch (_e) { /* noop */ }
   try {
     await Deno.mkdir(Deno.cwd() + "/public/pages");
   } catch (_e) { /* noop */ }

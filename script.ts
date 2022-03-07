@@ -7,6 +7,12 @@ import { join, resolve, toFileUrl } from "./_core/deps/dev.ts";
 
 async function dev_server() {
   const sleep = (ms = 100) => new Promise((ok) => setTimeout(ok, ms));
+  try {
+    await Deno.writeTextFile(
+      Deno.cwd() + "/_core/result/server_pages.ts",
+      `export const map_pages: any = [];`,
+    );
+  } catch (_e) { /* noop */ }
   await genRoutesWithRefresh("development");
   await sleep(1000);
   const CMD = Deno.build.os === "windows" ? "cmd /c " : "";

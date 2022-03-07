@@ -1,7 +1,7 @@
 ## Deno SSR Boilerplate
 
-[Nextjs](https://nextjs.org/) like, (dynamic routes page and api), boilerplate
-for [Deno](https://deno.land) that uses [nanojsx](https://nanojsx.io/).
+Deno SSR (dynamic routes pages and apis), boilerplate for
+[Deno](https://deno.land) that uses [nanojsx](https://nanojsx.io/).
 
 Demo => https://deno-ssr-boilerplate.deno.dev
 
@@ -57,37 +57,37 @@ File : /src/pages/about.tsx
 
 ```tsx
 /** @jsx h */
-import { h, Helmet } from "nano-jsx";
+import { Component, h, Helmet } from "nano-jsx";
 import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
 
-function About(props: PageProps) {
-  return (
-    <div>
-      <Helmet>
-        <title>{props.title}</title>
-      </Helmet>
-      <div class={tw`bg-white flex h-screen`}>
-        <h1 class={tw`text-5xl text-green-600 m-auto mt-20`}>
-          {props.title}
-        </h1>
-      </div>
-    </div>
-  );
-}
-
-// ssr first (optionals)
-About.initProps = async (rev: RequestEvent) => {
-  if (rev.isServer) {
-    // don't fetch self server :). use handler instead.
-    // of course, normal fetch it's ok fine. but not recomended if hole api. :(
-    return await rev.handler("/api/about.ts");
+export default class About extends Component<PageProps> {
+  // initial props (optional)
+  public static async initProps(rev: RequestEvent) {
+    if (rev.isServer) {
+      // don't fetch self server :). use handler instead.
+      // of course, normal fetch it's ok fine. but not recomended if hole api. :(
+      return await rev.handler("/api/about.ts");
+    }
+    // normal fetch if client-side
+    return await (await fetch(rev.getBaseUrl() + "/api/about")).json();
   }
-  // normal fetch if client-side
-  return await (await fetch(rev.getBaseUrl() + "/api/about")).json();
-};
 
-export default About;
+  render() {
+    return (
+      <div>
+        <Helmet>
+          <title>{this.props.title}</title>
+        </Helmet>
+        <div class={tw`bg-white flex h-screen`}>
+          <h1 class={tw`text-5xl text-green-600 m-auto mt-20`}>
+            {this.props.title}
+          </h1>
+        </div>
+      </div>
+    );
+  }
+}
 ```
 
 File : /src/pages/api/about.ts
