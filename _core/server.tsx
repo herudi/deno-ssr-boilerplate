@@ -1,6 +1,6 @@
 /** @jsx h */
 import { h } from "nano-jsx";
-import { ssr } from "./deps/nano_ssr.ts";
+import { jsx } from "./deps/tpl.ts";
 import { Handler, HttpError, NHttp } from "nhttp";
 import { RequestEvent } from "./deps/types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
@@ -97,12 +97,13 @@ app.use((rev, next) => {
     return await (apis.map[name] as Handler<RequestEvent>)(rev, next);
   };
   rev.render = async (Page, props) => {
+    rev.response.type("text/html; charset=utf-8");
     const rootData = RootApp.initProps ? (await RootApp.initProps(rev)) : {};
     if (rootData) {
       const data = props.initData || {};
       props.initData = { ...data, ...rootData };
     }
-    return ssr(
+    return jsx(
       <RootApp
         isServer={true}
         initData={props.initData}
@@ -126,21 +127,16 @@ app.on404((rev) => {
   if (rev.path.startsWith("/api/")) {
     return { status: 404, message: `route ${rev.url} not found` };
   }
-  return ssr(<Error404 message={`route ${rev.url} not found`} status={404} />, {
-    status: 404,
-  });
+  rev.response.type("text/html; charset=utf-8");
+  return jsx(<Error404 message={`route ${rev.url} not found`} status={404} />);
 });
 app.onError((err, rev) => {
   const status = rev.response.status();
   if (rev.path.startsWith("/api/")) {
     return { status, message: err.message };
   }
-  return ssr(
-    <ErrorPage message={err.message} status={status} />,
-    {
-      status,
-    },
-  );
+  rev.response.type("text/html; charset=utf-8");
+  return jsx(<ErrorPage message={err.message} status={status} />);
 });
 
 export const initApp = (routeCallback?: (app: NHttp<ReqEvent>) => any) => {
