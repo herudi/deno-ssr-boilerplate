@@ -15,8 +15,6 @@ const html = (
 ) => (`<!DOCTYPE html>
 <html ${attributes.html.toString()}>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     ${head.join("\n    ")}
     ${styleTag}
   </head>
@@ -31,9 +29,7 @@ const html = (
     }</script>`
     : ""
 }${footer.join("\n    ")}${
-  env === "development"
-    ? '<script src="/assets/js/refresh_client.js"></script>'
-    : ""
+  env === "development" ? '<script src="/assets/js/refresh.js"></script>' : ""
 }${
   clientScript
     ? `<script type="module" src="${clientScript + "?v=" + tt}"></script>`

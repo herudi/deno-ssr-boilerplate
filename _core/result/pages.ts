@@ -17,4 +17,4 @@ export const map_pages = [
     page: './sign.js'
   },
 ];
-export const tt: string = '1646695269086';
+export const tt: string = '1646718924480';

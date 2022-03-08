@@ -199,3 +199,9 @@ export async function genRoutesWithRefresh(env: string) {
   localStorage.clear();
   return await genPages(true, env);
 }
+export const sse_script = (tt: number) => `
+const tt = "${tt}";
+new EventSource("/__REFRESH__").addEventListener("message", ({ data }) => {
+  if (data !== tt) location.reload();
+});
+`;

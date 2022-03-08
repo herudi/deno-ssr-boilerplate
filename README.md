@@ -18,7 +18,6 @@ Demo => https://deno-ssr-boilerplate.deno.dev
 - [nanojsx](https://nanojsx.io/)
 - [twind](https://twind.dev/)
 - [nhttp](https://nhttp.deno.dev)
-- [refresh](https://deno.land/x/refresh)
 - more
 
 ## Usage

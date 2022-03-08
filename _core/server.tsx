@@ -27,9 +27,8 @@ if (env === "development") {
   try {
     await Deno.remove(Deno.cwd() + "/public/pages", { recursive: true });
   } catch (_e) { /* noop */ }
-  const { genPages } = await import("./build/gen.ts");
+  const { genPages, sse_script } = await import("./build/gen.ts");
   const { map_pages } = await import("./result/pages.ts");
-  const { refresh } = await import("https://deno.land/x/refresh@1.0.0/mod.ts");
   const esbuild = await import("https://deno.land/x/esbuild@v0.14.22/mod.js");
   const es_map = await import(
     "https://esm.sh/esbuild-plugin-import-map?no-check"
@@ -45,29 +44,36 @@ if (env === "development") {
     jsxFactory: "h",
     jsxFragment: "Fragment",
     format: "esm",
-    loader: {
-      ".ts": "ts",
-      ".js": "js",
-      ".tsx": "tsx",
-    },
     write: false,
     bundle: true,
     plugins: [es_map.plugin()],
     entryPoints: ["./_core/tsx/hydrate.tsx"],
-    outfile: "./public/pages/_app.js",
+    minify: true,
   });
-  const source = result.outputFiles[0]?.text || "noop";
-  const midd = refresh({
-    paths: "./src/pages/",
+  const source = result.outputFiles[0]?.contents;
+  if (source) {
+    app.get(clientScript, ({ response }) => {
+      response.type("application/javascript");
+      return source;
+    });
+  }
+  app.get("/__REFRESH__", ({ response }) => {
+    response.type("text/event-stream");
+    return new ReadableStream({
+      start(controller) {
+        controller.enqueue(`data: reload\nretry: 100\n\n`);
+      },
+      cancel(err) {
+        console.log(err);
+      },
+    }).pipeThrough(new TextEncoderStream());
   });
-  app.use((rev, next) => {
-    const res = midd(rev.request);
-    if (res) return res;
-    return next();
-  });
-  app.get(clientScript, ({ response }) => {
+  app.get("/assets/js/refresh.js", ({ response }) => {
     response.type("application/javascript");
-    return source;
+    return `let bool = false; new EventSource("/__REFRESH__").addEventListener("message", _ => {
+      if (bool) location.reload();
+      else bool = true;
+    });`;
   });
 } else {
   pages = map_server_pages;
