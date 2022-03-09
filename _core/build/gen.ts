@@ -16,7 +16,7 @@ export async function getListPages() {
   for await (const entry of it) {
     if (entry.isFile) {
       const file = toFileUrl(entry.path).href.substring(url.href.length);
-      if (!file.startsWith("/_app.")) {
+      if (!file.startsWith("/_app.") && !file.startsWith("/_error.")) {
         if (!file.startsWith("/api/")) {
           page_list.push("./src/pages" + file);
         }
@@ -107,20 +107,17 @@ export const tt: string = '${Date.now()}';
 `;
   }
   return `
-import { Router, Handler } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
+import { Router } from "https://deno.land/x/nhttp@1.1.10/mod.ts";
 import { RequestEvent } from "./../deps/types.ts";
 ${arr.map((el, i) => `import $${i} from "../../src/pages${el}";`).join("\n")}
 const api = new Router<RequestEvent>();
-const map = {} as Record<string, Handler<RequestEvent> | Handler<RequestEvent>[]>;
   ${
     arr.map((el, i) => {
       const path = genPath(el);
-      return `
-map['${el}'] = $${i};
-api.any('${path}', $${i});`;
+      return `api.any('${path}', $${i});`;
     }).join("\n  ")
   }
-export default { api, map };
+export default api;
 `;
 }
 
@@ -149,7 +146,7 @@ export async function genPages(
     for await (const entry of it) {
       if (entry.isFile) {
         const file = toFileUrl(entry.path).href.substring(url.href.length);
-        if (!file.startsWith("/_app.")) {
+        if (!file.startsWith("/_app.") && !file.startsWith("/_error.")) {
           if (file.startsWith("/api/")) {
             api_list.push(file);
           } else {
@@ -199,9 +196,3 @@ export async function genRoutesWithRefresh(env: string) {
   localStorage.clear();
   return await genPages(true, env);
 }
-export const sse_script = (tt: number) => `
-const tt = "${tt}";
-new EventSource("/__REFRESH__").addEventListener("message", ({ data }) => {
-  if (data !== tt) location.reload();
-});
-`;

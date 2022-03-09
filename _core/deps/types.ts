@@ -5,7 +5,12 @@ export type RequestEvent = BRequestEvent & {
   pathname: string;
   isServer: boolean;
   isFirst: boolean;
-  handler: (targetFile: string) => Promise<any>;
+  /**
+   * Fetch data from internal API.
+   * @example
+   * const { data, error } = await fetchApi("/api/home");
+   */
+  fetchApi: (pathname: string, options?: RequestInit) => Promise<any>;
 };
 
 export type RouteProps = {

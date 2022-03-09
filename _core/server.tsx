@@ -1,14 +1,13 @@
 /** @jsx h */
 import { h } from "nano-jsx";
 import { jsx } from "./deps/tpl.ts";
-import { Handler, HttpError, NHttp } from "nhttp";
+import { HttpError, NHttp } from "nhttp";
 import { RequestEvent } from "./deps/types.ts";
 import staticFiles from "https://deno.land/x/static_files@1.1.6/mod.ts";
 import RootApp from "./tsx/root_app.tsx";
 import { map_pages as map_server_pages } from "./result/server_pages.ts";
 import apis from "./result/apis.ts";
-import Error404 from "../src/components/error/404.tsx";
-import ErrorPage from "../src/components/error/error.tsx";
+import ErrorPage from "../src/pages/_error.tsx";
 
 const env = (Deno.args || []).includes("--dev") ? "development" : "production";
 const clientScript = "/assets/pages/_app.js";
@@ -27,7 +26,7 @@ if (env === "development") {
   try {
     await Deno.remove(Deno.cwd() + "/public/pages", { recursive: true });
   } catch (_e) { /* noop */ }
-  const { genPages, sse_script } = await import("./build/gen.ts");
+  const { genPages } = await import("./build/gen.ts");
   const { map_pages } = await import("./result/pages.ts");
   const esbuild = await import("https://deno.land/x/esbuild@v0.14.22/mod.js");
   const es_map = await import(
@@ -86,21 +85,42 @@ app.use((rev, next) => {
   rev.isServer = true;
   rev.env = env;
   rev.pathname = rev.path;
-  rev.handler = async (name) => {
-    if (!name.startsWith("/")) name = "/" + name;
-    const fns = apis.map[name];
-    if (Array.isArray(fns)) {
-      let i = 0;
+  rev.fetchApi = async (pathname) => {
+    const arr = app.route["ANY"];
+    let i = 0, len = arr.length, fns: any;
+    while (i < len) {
+      const obj = arr[i];
+      if (obj.pathx.test(pathname)) {
+        fns = obj.fns;
+        break;
+      }
+      i++;
+    }
+    if (!fns) throw new HttpError(404, `${pathname} not found`);
+    try {
+      if (fns.length === 1) {
+        const data = await fns[0](rev, next);
+        return { data, error: void 0 };
+      }
+      let j = 0;
       const ret = (err?: Error) => {
         if (err) {
           if (err instanceof Error) throw err;
           else throw new HttpError(500, String(err));
         }
-        return (fns as unknown as Handler<RequestEvent>[])[i++](rev, ret);
+        return fns[j++](rev, ret);
       };
-      return await ret();
+      const data = await ret();
+      return { data, error: void 0 };
+    } catch (error) {
+      return {
+        data: void 0,
+        error: {
+          status: error.status || 500,
+          message: error.message || "Something went wrong",
+        },
+      };
     }
-    return await (apis.map[name] as Handler<RequestEvent>)(rev, next);
   };
   rev.render = async (Page, props) => {
     rev.response.type("text/html; charset=utf-8");
@@ -127,22 +147,19 @@ app.use((rev, next) => {
   return next();
 });
 
-app.use("/api", apis.api as any);
+app.use("/api", apis as any);
 
 app.on404((rev) => {
-  if (rev.path.startsWith("/api/")) {
-    return { status: 404, message: `route ${rev.url} not found` };
-  }
-  rev.response.type("text/html; charset=utf-8");
-  return jsx(<Error404 message={`route ${rev.url} not found`} status={404} />);
+  throw new HttpError(404, `${rev.url} not found`);
 });
+
 app.onError((err, rev) => {
   const status = rev.response.status();
   if (rev.path.startsWith("/api/")) {
     return { status, message: err.message };
   }
   rev.response.type("text/html; charset=utf-8");
-  return jsx(<ErrorPage message={err.message} status={status} />);
+  return jsx(<ErrorPage message={err.message} status={status as number} />);
 });
 
 export const initApp = (routeCallback?: (app: NHttp<ReqEvent>) => any) => {

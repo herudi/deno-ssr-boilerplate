@@ -61,26 +61,22 @@ import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
 
 export default class About extends Component<PageProps> {
-  // initial props (optional)
-  public static async initProps(rev: RequestEvent) {
-    if (rev.isServer) {
-      // don't fetch self server :). use handler instead.
-      // of course, normal fetch it's ok fine. but not recomended if hole api. :(
-      return await rev.handler("/api/about.ts");
-    }
-    // normal fetch if client-side
-    return await (await fetch(rev.getBaseUrl() + "/api/about")).json();
+  // initial props (work server-side or client-side)
+  static async initProps(rev: RequestEvent) {
+    const { data, error } = await rev.fetchApi("/api/about");
+    return { data, error };
   }
 
   render() {
+    if (this.props.error) return <h1>error</h1>;
     return (
       <div>
         <Helmet>
-          <title>{this.props.title}</title>
+          <title>{this.props.data.title}</title>
         </Helmet>
         <div class={tw`bg-white flex h-screen`}>
           <h1 class={tw`text-5xl text-green-600 m-auto mt-20`}>
-            {this.props.title}
+            {this.props.data.title}
           </h1>
         </div>
       </div>

@@ -18,7 +18,9 @@ function App({ Component, props }: AppProps) {
           rel="stylesheet"
         />
       </Helmet>
-      {props.route.pathname !== "/sign" && <Navbar route={props.route} />}
+      {(props.route.pathname === "/sign" || props.error)
+        ? null
+        : <Navbar route={props.route} />}
       <Component {...props} />
     </div>
   );

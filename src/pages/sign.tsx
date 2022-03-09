@@ -9,20 +9,20 @@ const style = {
 };
 
 class Sign extends Component<PageProps> {
-  public static async initProps(rev: RequestEvent) {
+  // apply SignPage methods GET and POST (default ["GET"]).
+  static methods = ["GET", "POST"];
+
+  static async initProps(rev: RequestEvent) {
     if (rev.isServer && rev.request.method === "POST") {
-      const { message } = await rev.handler("/api/sign.ts");
-      if (message === "success") {
+      const { data } = await rev.fetchApi("/api/sign");
+      if (data.message === "success") {
         // if success will redirect to home
         return rev.response.redirect("/");
       }
-      return { message };
+      return { message: data.message };
     }
     return {};
   }
-
-  // apply SignPage methods GET and POST (default ["GET"]).
-  public static methods = ["GET", "POST"];
 
   render() {
     return (

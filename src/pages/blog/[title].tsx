@@ -2,19 +2,14 @@
 import { Component, h, Helmet, Router } from "nano-jsx";
 import { tw } from "twind";
 import { PageProps, RequestEvent } from "types";
+import ErrorPage from "../_error.tsx";
 
 const { Link } = Router;
 
 class BlogDetail extends Component<PageProps> {
-  public static async initProps(rev: RequestEvent) {
-    let data;
-    if (rev.isServer) {
-      data = await rev.handler("/api/blog/[title].ts");
-    } else {
-      data = await fetch(rev.getBaseUrl() + "/api/blog/" + rev.params.title);
-      data = await data.json();
-    }
-    return { data: data[0] || {} };
+  static async initProps({ fetchApi, params }: RequestEvent) {
+    const { data, error } = await fetchApi("/api/blog/" + params.title);
+    return { data, error };
   }
 
   didMount() {
@@ -22,6 +17,7 @@ class BlogDetail extends Component<PageProps> {
   }
 
   render() {
+    if (this.props.error) return <ErrorPage {...this.props.error} />;
     const route = this.props.route;
     return (
       <div>

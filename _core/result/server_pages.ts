@@ -25,4 +25,4 @@ export const map_pages: any = [
     methods: ($3 as any).methods
   },
 ];
-export const tt: string = '1646718924481';
+export const tt: string = '1646808121933';

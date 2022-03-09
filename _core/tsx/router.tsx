@@ -1,7 +1,7 @@
 /** @jsx h */
 
 import { h, hydrate } from "nano-jsx";
-import Error404 from "../../src/components/error/404.tsx";
+import ErrorPage from "../../src/pages/_error.tsx";
 import { RequestEvent } from "../deps/types.ts";
 
 type ReqEvent = RequestEvent & {
@@ -55,7 +55,9 @@ export default class ClassicRouter {
   fallback: any;
   constructor(opts: TRouter = {}) {
     this.id = opts.id || "root";
-    this.fallback = opts.fallback || <Error404 />;
+    this.fallback = opts.fallback || (
+      <ErrorPage message="Not Found" status={404} />
+    );
   }
 
   add(path: string, fn: THandler) {
@@ -90,7 +92,7 @@ export default class ClassicRouter {
   }
 
   handle() {
-    const { pathname, search } = window.location;
+    const { pathname, search, origin } = window.location;
     if (this.current === pathname + search) return;
     let { fn, params } = this.find(pathname);
     this.current = pathname + search;
@@ -100,12 +102,24 @@ export default class ClassicRouter {
     rev.url = this.current;
     rev.path = pathname;
     rev.isServer = false;
-    rev.getBaseUrl = () => location.origin;
+    rev.getBaseUrl = () => origin;
     rev.params = params;
+    rev.fetchApi = async (pathname, opts) => {
+      try {
+        const res = await fetch(origin + pathname, opts);
+        if (!res.ok) throw res;
+        const json = await res.json();
+        return { data: json, error: void 0 };
+      } catch (error) {
+        const json = await error.json();
+        json.message = decURI(json.message);
+        return { data: void 0, error: json };
+      }
+    };
     rev.render = (elem, id) => {
       hydrate(elem, document.getElementById(id || _id));
     };
-    if (!fn) return rev.render(<Error404 />);
+    if (!fn) return rev.render(<ErrorPage message="Not Found" status={404} />);
     fn(rev);
   }
 
